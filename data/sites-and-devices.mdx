@@ -1,0 +1,152 @@
+---
+title: "Managing Measurement Sites and Devices in NRG Cloud"
+sidebarTitle: "Sites & Devices"
+description: "Learn how to create measurement sites, register LOGR and ZX 300e devices, and monitor device status and connectivity in NRG Cloud."
+---
+
+Sites and devices are the foundation of how NRG Cloud organizes your measurement campaigns. A **site** represents a physical measurement location — a place on the map where you are conducting wind or solar resource assessment — and acts as the container for all data, configurations, and equipment associated with that campaign. Each site can have one or more **devices** attached to it, whether that is a LOGR data logger, a ZX 300e Wind Lidar, or a legacy Symphonie logger. Understanding how sites and devices relate to each other helps you navigate your data efficiently and keep your deployments well organized.
+
+---
+
+## What Is a Site?
+
+A site in NRG Cloud maps to a real-world measurement location or campaign. It stores metadata such as geographic coordinates, time zone, and project details, and it serves as the parent record for all devices and data channels at that location. You can have as many sites as your subscription allows, and each site maintains its own independent data history.
+
+<CardGroup cols={2}>
+  <Card title="Measurement Location" icon="location-dot">
+    A site anchors your campaign to a specific latitude and longitude, enabling map-based navigation and correct local time display.
+  </Card>
+  <Card title="Data Container" icon="database">
+    All time-series measurements, file downloads, and configuration history are scoped to the site, keeping projects cleanly separated.
+  </Card>
+  <Card title="Multi-Device Support" icon="server">
+    A single site can host multiple devices — for example, a LOGR logger and a ZX 300e Lidar deployed at the same location.
+  </Card>
+  <Card title="Project Metadata" icon="folder-open">
+    Attach project name, client, notes, and custom tags to a site for easy filtering and reporting.
+  </Card>
+</CardGroup>
+
+---
+
+## Adding a New Site
+
+<Steps>
+  <Step title="Open the Sites list">
+    In the left navigation panel, click **Sites**. The Sites dashboard displays all existing sites in your organization. Click the **+ New Site** button in the upper-right corner to open the site creation form.
+  </Step>
+  <Step title="Enter site name and project details">
+    Provide a unique **Site Name** that identifies the location within your organization (for example, `Ridgeline North – Phase 2`). Optionally enter a **Project Name**, **Client**, and free-text **Notes**. These fields are searchable and help you filter sites across large portfolios.
+  </Step>
+  <Step title="Set the geographic location">
+    Enter the site's **Latitude** and **Longitude** in decimal degrees (for example, `44.2153` and `-73.0814`). You can also click **Pick on Map** to place a pin interactively. NRG Cloud uses these coordinates to display the site on the map view and to compute solar position angles for irradiance calculations.
+
+    <Tip>
+      Use at least five decimal places of precision for coordinates to ensure accurate solar resource calculations and to distinguish nearby sites on the map.
+    </Tip>
+  </Step>
+  <Step title="Select the time zone">
+    Choose the site's local **Time Zone** from the dropdown. NRG Cloud stores all data internally in UTC and uses this setting to display timestamps in local time. Select the time zone that matches the physical location of the measurement tower or lidar.
+
+    <Note>
+      You can change the time zone display at any time without affecting the underlying UTC data. However, aligning the logger's configured time zone with this setting avoids confusion during file downloads.
+    </Note>
+  </Step>
+  <Step title="Save the site">
+    Click **Save Site**. NRG Cloud creates the site record and redirects you to the site detail page, where you can immediately begin registering devices.
+  </Step>
+</Steps>
+
+---
+
+## Viewing Your Sites
+
+The **Sites** list page shows all sites your account has access to. You can switch between a table view and a map view using the icons in the upper-right corner.
+
+- **Table view** — displays site name, project, time zone, number of devices, and the timestamp of the most recently received data. Click any row to open that site's detail page.
+- **Map view** — plots all sites as pins on an interactive map. Click a pin to see a summary card with the site name, device count, and last data received. Click **Open Site** in the card to navigate to the full detail page.
+
+Use the search bar and the **Project** and **Status** filter dropdowns to narrow the list when your organization manages a large number of sites.
+
+---
+
+## What Is a Device?
+
+A device is a piece of NRG hardware physically deployed at a site and configured to transmit data to NRG Cloud. Each device has a unique serial number that links its data stream to the correct site.
+
+NRG Cloud currently supports the following device types:
+
+<CardGroup cols={3}>
+  <Card title="LOGR Data Logger" icon="microchip">
+    NRG's cellular-connected data logger for met masts. Supports up to 32 channels, configurable scan rates, and remote firmware updates.
+  </Card>
+  <Card title="ZX 300e Wind Lidar" icon="wind">
+    Remote sensing lidar for vertical wind profiling. Transmits processed wind speed and direction profiles at multiple heights.
+  </Card>
+  <Card title="Symphonie Logger (Legacy)" icon="clock-rotate-left">
+    NRG's previous-generation data logger. Supported in NRG Cloud for historical data access and file downloads in RWD format.
+  </Card>
+</CardGroup>
+
+---
+
+## Registering a Device to a Site
+
+Devices are associated with sites by registering their serial number in NRG Cloud. The serial number is printed on a label on the device enclosure and is also visible in the device's local configuration interface.
+
+<Steps>
+  <Step title="Open the site detail page">
+    Navigate to the site where you want to register the device and click the **Devices** tab.
+  </Step>
+  <Step title="Add a device">
+    Click **+ Add Device**. Select the device type — **LOGR**, **ZX 300e**, or **Symphonie** — from the dropdown.
+  </Step>
+  <Step title="Enter the serial number">
+    Type the device's serial number exactly as it appears on the label (for example, `LOGR-00412`). NRG Cloud validates the serial number against its device registry.
+
+    <Warning>
+      A device can only be registered to one site at a time. If you attempt to register a serial number that is already linked to another site in your organization, NRG Cloud will display an error and prompt you to unlink it from the previous site first.
+    </Warning>
+  </Step>
+  <Step title="Confirm registration">
+    Click **Register Device**. If the device is already transmitting data, NRG Cloud begins associating incoming records with this site immediately. Historical data already received before registration is also linked retroactively.
+  </Step>
+</Steps>
+
+---
+
+## Viewing Device Status
+
+On the **Devices** tab of a site's detail page, each registered device displays a live status summary:
+
+<ResponseField name="Status" type="string">
+  **Online** — the device has successfully transmitted data within the expected reporting interval. **Offline** — no data has been received within the reporting interval. The badge color changes from green to red accordingly.
+</ResponseField>
+
+<ResponseField name="Last Data Received" type="timestamp">
+  The UTC timestamp of the most recent data record received from the device. Hover over the timestamp to see the equivalent local site time.
+</ResponseField>
+
+<ResponseField name="Signal Strength" type="integer">
+  Cellular signal strength reported by the device, expressed as a percentage (0–100 %). Values below 20 % may indicate intermittent connectivity and potential data gaps.
+</ResponseField>
+
+<ResponseField name="Firmware Version" type="string">
+  The version of firmware currently running on the device. NRG Cloud highlights devices running outdated firmware with a yellow indicator.
+</ResponseField>
+
+<ResponseField name="Battery Voltage" type="float">
+  For LOGR loggers, the current battery or supply voltage in volts DC. A value below 11.5 V on a 12 V system typically warrants investigation.
+</ResponseField>
+
+---
+
+## Editing Site or Device Details
+
+To edit a site's name, coordinates, time zone, or project metadata, open the site detail page and click the **Edit** button (pencil icon) in the site header. Modify any fields and click **Save Changes**.
+
+To edit a device's display label or notes, click the device row in the **Devices** tab to expand its detail panel, then click **Edit Device**. You can update the friendly name and add installation notes, but the serial number cannot be changed after registration — to correct a serial number entry, remove the device and re-register it.
+
+<Info>
+  Changes to site metadata (name, time zone, coordinates) do not alter any stored data or affect how data is displayed retroactively. They take effect immediately for new incoming data and for the UI display.
+</Info>

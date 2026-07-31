@@ -1,0 +1,240 @@
+---
+title: 'NRG Cloud API Authentication — OAuth 2.0 Token Guide'
+sidebarTitle: 'Authentication'
+description: 'Learn how to generate API credentials, request OAuth 2.0 Bearer tokens, and authenticate all your NRG Cloud API requests with best practices.'
+---
+
+The NRG Cloud API uses the **OAuth 2.0 client credentials** grant flow to authenticate machine-to-machine requests. You exchange a `client_id` and `client_secret` for a short-lived Bearer token, then include that token in the `Authorization` header of every API call. This page walks you through generating credentials, requesting a token, using it in requests, and following security best practices to keep your credentials safe.
+
+## Step 1 — Generate API Credentials
+
+Before you can make any API call, you need a `client_id` and `client_secret` from your NRG Cloud account.
+
+<Steps>
+  <Step title="Log in to NRG Cloud">
+    Go to [cloud.nrgsystems.com](https://cloud.nrgsystems.com) and sign in with your account credentials.
+  </Step>
+  <Step title="Open API Credentials settings">
+    Click your account avatar in the top-right corner, then select **Settings**. In the left-hand navigation, click **API Credentials**.
+  </Step>
+  <Step title="Create a new credential pair">
+    Click **Create New**. Give the credential a descriptive name (for example, `data-pipeline-prod`) so you can identify it later. Click **Save**.
+  </Step>
+  <Step title="Copy your credentials">
+    The portal displays your `client_id` and `client_secret` **once**. Copy both values and store them securely — the secret cannot be retrieved again after you close the dialog.
+  </Step>
+</Steps>
+
+<Warning>
+  Treat your `client_secret` like a password. If it is ever exposed, immediately revoke it in **Settings → API Credentials** and generate a new pair.
+</Warning>
+
+## Step 2 — Request a Bearer Token
+
+Use your credentials to request a Bearer token from the token endpoint.
+
+**Token endpoint:**
+
+```
+POST https://cloud.nrgsystems.com/api/v1/oauth/token
+Content-Type: application/x-www-form-urlencoded
+```
+
+**Request body parameters:**
+
+<ParamField body="grant_type" type="string" required>
+  Must be `client_credentials`.
+</ParamField>
+
+<ParamField body="client_id" type="string" required>
+  Your API client ID, obtained from **Settings → API Credentials**.
+</ParamField>
+
+<ParamField body="client_secret" type="string" required>
+  Your API client secret, obtained when you created the credential pair.
+</ParamField>
+
+### Example Token Request
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://cloud.nrgsystems.com/api/v1/oauth/token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=client_credentials" \
+  -d "client_id=YOUR_CLIENT_ID" \
+  -d "client_secret=YOUR_CLIENT_SECRET"
+```
+
+```python Python
+import requests
+
+token_url = "https://cloud.nrgsystems.com/api/v1/oauth/token"
+
+response = requests.post(
+    token_url,
+    headers={"Content-Type": "application/x-www-form-urlencoded"},
+    data={
+        "grant_type": "client_credentials",
+        "client_id": "YOUR_CLIENT_ID",
+        "client_secret": "YOUR_CLIENT_SECRET",
+    },
+)
+
+token_data = response.json()
+access_token = token_data["access_token"]
+print(f"Token acquired. Expires in {token_data['expires_in']} seconds.")
+```
+
+</CodeGroup>
+
+### Token Response
+
+A successful token request returns `HTTP 200` with the following JSON body:
+
+```json
+{
+  "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "Bearer",
+  "expires_in": 3600
+}
+```
+
+<ResponseField name="access_token" type="string">
+  A signed JSON Web Token (JWT) that you include in the `Authorization` header of every API request.
+</ResponseField>
+
+<ResponseField name="token_type" type="string">
+  Always `Bearer`. Use this value as the prefix in the `Authorization` header.
+</ResponseField>
+
+<ResponseField name="expires_in" type="integer">
+  The number of seconds until the token expires (default: `3600` — one hour).
+</ResponseField>
+
+## Step 3 — Use the Token in API Requests
+
+Include the `access_token` in the `Authorization` header of every request, prefixed with `Bearer `:
+
+```http
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+### Example Authenticated Request
+
+<CodeGroup>
+
+```bash cURL
+curl -X GET https://cloud.nrgsystems.com/api/v1/sites \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+```python Python
+import requests
+
+BASE_URL = "https://cloud.nrgsystems.com/api/v1"
+
+headers = {"Authorization": f"Bearer {access_token}"}
+
+response = requests.get(f"{BASE_URL}/sites", headers=headers)
+sites = response.json()
+print(sites)
+```
+
+</CodeGroup>
+
+If the token is missing or invalid, the API returns `HTTP 401 Unauthorized`:
+
+```json
+{
+  "error": "invalid_token",
+  "message": "The access token is missing, malformed, or has expired."
+}
+```
+
+## Token Expiration and Refreshing
+
+Tokens issued by the NRG Cloud API are valid for **3600 seconds (one hour)**. The client credentials flow does not issue refresh tokens — when a token expires, simply repeat the POST to `/oauth/token` with your credentials to obtain a new one.
+
+<Tip>
+  Build a lightweight token manager into your integration that checks the token's age before each request and proactively fetches a new token a few minutes before expiry. This avoids interrupted API calls mid-pipeline.
+</Tip>
+
+A simple Python example of proactive token management:
+
+```python
+import requests
+import time
+
+class NRGCloudAuth:
+    TOKEN_URL = "https://cloud.nrgsystems.com/api/v1/oauth/token"
+    REFRESH_BUFFER = 300  # refresh 5 minutes before expiry
+
+    def __init__(self, client_id: str, client_secret: str):
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self._token = None
+        self._expires_at = 0
+
+    def get_token(self) -> str:
+        if time.time() >= (self._expires_at - self.REFRESH_BUFFER):
+            self._fetch_token()
+        return self._token
+
+    def _fetch_token(self):
+        resp = requests.post(
+            self.TOKEN_URL,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            data={
+                "grant_type": "client_credentials",
+                "client_id": self.client_id,
+                "client_secret": self.client_secret,
+            },
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        self._token = data["access_token"]
+        self._expires_at = time.time() + data["expires_in"]
+
+    @property
+    def headers(self) -> dict:
+        return {"Authorization": f"Bearer {self.get_token()}"}
+```
+
+## Security Best Practices
+
+Protecting your `client_id` and `client_secret` is critical. Follow these guidelines:
+
+<Steps>
+  <Step title="Use environment variables">
+    Store credentials in environment variables rather than hard-coding them in source files.
+
+    ```bash
+    export NRG_CLIENT_ID="your_client_id"
+    export NRG_CLIENT_SECRET="your_client_secret"
+    ```
+
+    ```python
+    import os
+
+    client_id = os.environ["NRG_CLIENT_ID"]
+    client_secret = os.environ["NRG_CLIENT_SECRET"]
+    ```
+  </Step>
+  <Step title="Never commit secrets to source control">
+    Add any file that contains credentials to your `.gitignore`. Consider using a tool like [git-secrets](https://github.com/awslabs/git-secrets) or [truffleHog](https://github.com/trufflesecurity/trufflehog) to scan commits for accidentally included secrets.
+  </Step>
+  <Step title="Use a secrets manager in production">
+    For production systems, store credentials in a dedicated secrets manager such as AWS Secrets Manager, HashiCorp Vault, or Azure Key Vault rather than in environment variables on a shared host.
+  </Step>
+  <Step title="Rotate credentials regularly">
+    Periodically generate new credential pairs in **Settings → API Credentials** and retire old ones — especially after any team member with access leaves your organisation.
+  </Step>
+  <Step title="Apply least privilege">
+    Create separate credential pairs for separate systems or environments (e.g., `dev`, `staging`, `prod`). This limits the blast radius if one credential is compromised.
+  </Step>
+</Steps>
+
+<Note>
+  If you suspect a credential has been compromised, revoke it immediately in **Settings → API Credentials** before generating a replacement. Revoking invalidates all tokens issued under that credential pair within minutes.
+</Note>

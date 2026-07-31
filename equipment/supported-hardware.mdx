@@ -1,0 +1,85 @@
+---
+title: 'NRG Cloud Supported Hardware: Device Types and Connectivity'
+sidebarTitle: 'Supported Hardware'
+description: 'Discover which NRG hardware devices integrate with NRG Cloud, how each connects to the platform, and how to monitor connection status in the UI.'
+---
+
+NRG Cloud is purpose-built to work with NRG Systems hardware, giving wind and solar resource assessment professionals a unified platform for data collection, remote management, and analysis. Whether you are deploying a met mast with a LOGR logger, profiling wind shear with a ZX 300e lidar, or migrating historical data from a legacy Symphonie system, NRG Cloud provides a consistent workflow for every device type. Each supported device connects to the cloud over a dedicated communication path, and the platform surfaces real-time connection health so you always know the status of your instruments in the field.
+
+## Supported Device Types
+
+<CardGroup cols={2}>
+  <Card title="LOGR Met Data Logger" icon="tower-cell">
+    The next-generation met mast data logger designed for wind and solar resource campaigns. LOGR supports high-frequency sensor sampling, encrypted data transmission, and full remote configuration via NRG Cloud. It connects over **cellular** or **satellite** networks, making it suitable for remote sites with no fixed infrastructure.
+
+    [Learn more about LOGR →](/equipment/logr-logger)
+  </Card>
+  <Card title="ZX 300e Wind Lidar" icon="wind">
+    A vertical profiling continuous-wave Doppler lidar classified to **IEC 61400-12-1** standards. The ZX 300e measures wind speed and direction at configurable heights from **21 m to 200 m**, transmitting wind profiles to NRG Cloud over Ethernet or cellular backhaul.
+
+    [Learn more about the ZX 300e →](/equipment/zx300e-lidar)
+  </Card>
+  <Card title="Legacy Symphonie Loggers" icon="hard-drive">
+    Existing Symphonie and Symphonie Plus loggers are supported through two compatible pathways: the **nrgpy** Python library for programmatic data retrieval, or direct **file upload** of `.rld` and `.rwd` files through the NRG Cloud web interface. No firmware changes are required on the logger itself.
+  </Card>
+  <Card title="Future & Third-Party Devices" icon="plug">
+    NRG Cloud's open API allows integration with third-party sensors and data acquisition systems. Contact your NRG Systems account representative for details on custom integration support and upcoming device certifications.
+  </Card>
+</CardGroup>
+
+## Connectivity Methods
+
+Each device type uses a dedicated communication path to deliver data to NRG Cloud. Understanding these paths helps you plan site infrastructure and troubleshoot connectivity issues.
+
+| Device | Connectivity Options | Typical Latency |
+|---|---|---|
+| LOGR Met Data Logger | Cellular (LTE/3G), Satellite (Iridium) | Minutes (cellular), Hours (satellite) |
+| ZX 300e Wind Lidar | Ethernet, Cellular backhaul | Minutes |
+| Legacy Symphonie | nrgpy library, Manual file upload | On-demand |
+
+### Cellular Connection (LOGR)
+
+LOGR uses an integrated cellular modem to push encrypted data packets to NRG Cloud at a configurable transmission interval. Cellular mode is recommended for sites within coverage of LTE or 3G networks and delivers the fastest data refresh rates.
+
+### Satellite Connection (LOGR)
+
+For sites beyond cellular coverage, LOGR supports satellite communication via the Iridium Short Burst Data (SBD) network. Satellite mode transmits compressed data summaries on a scheduled interval — typically every one to six hours — to minimize airtime costs while maintaining visibility into remote campaigns.
+
+### Ethernet Connection (ZX 300e)
+
+The ZX 300e connects to NRG Cloud over a standard Ethernet interface. At sites with local networking, the lidar can be routed through a cellular router or fixed broadband connection to push wind profile data on a frequent schedule.
+
+### nrgpy and File Upload (Symphonie)
+
+Legacy Symphonie loggers do not have a native cloud connection, but you can bring their data into NRG Cloud using the open-source **nrgpy** Python library or by uploading data files directly through the platform's import interface. Both methods parse raw logger files and ingest them into the same data pipeline used by LOGR and the ZX 300e.
+
+<Tip>
+  Install nrgpy from PyPI and authenticate with your NRG Cloud API key to automate Symphonie data ingestion into your existing workflows.
+
+  ```bash
+  pip install nrgpy
+  ```
+</Tip>
+
+## Connection Status Indicators
+
+NRG Cloud displays a real-time connection status badge on every device card in the **Equipment** dashboard. The indicator updates automatically based on the most recent successful check-in from each device.
+
+| Status | Badge Color | Meaning |
+|---|---|---|
+| Online | Green | Device checked in within the expected interval |
+| Delayed | Yellow | Last check-in exceeded the configured transmission interval |
+| Offline | Red | No check-in received within the alert threshold |
+| Pending | Gray | Device registered but has not yet checked in |
+
+<Note>
+  Connection status reflects the most recent data transmission, not continuous real-time telemetry. A device shown as **Online** may still have sensor faults — always review individual channel diagnostics for a complete picture of data quality.
+</Note>
+
+## Next Steps
+
+Once you confirm your device type and connectivity method, proceed to the device-specific setup guide to register your hardware and begin collecting data.
+
+- [Set up a LOGR Met Data Logger →](/equipment/logr-logger)
+- [Integrate a ZX 300e Wind Lidar →](/equipment/zx300e-lidar)
+- [Configure devices remotely →](/equipment/remote-configuration)

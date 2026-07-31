@@ -1,0 +1,107 @@
+---
+title: 'NRG Cloud REST API — Developer Overview & Quick Start'
+sidebarTitle: 'Overview'
+description: 'Explore the NRG Cloud REST API to programmatically access wind and solar measurement data, manage sites, and download data files easily.'
+---
+
+The NRG Cloud REST API gives you programmatic access to everything stored in your NRG Cloud account — from site configurations and measurement time series to raw and converted data files. Whether you are building automated data pipelines, integrating NRG Cloud into your own applications, or running batch downloads, the API provides a consistent, secure interface that works with any language or tool capable of making HTTP requests.
+
+## Base URL
+
+All API requests are made to the following base URL:
+
+```
+https://cloud.nrgsystems.com/api/v1
+```
+
+Every endpoint documented in this section is relative to this base URL. For example, to list your sites you would call `GET https://cloud.nrgsystems.com/api/v1/sites`.
+
+## What You Can Do
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="lock" href="/api/authentication">
+    Obtain OAuth 2.0 Bearer tokens using your client credentials and learn how to secure your API keys.
+  </Card>
+  <Card title="Endpoints Reference" icon="brackets-curly" href="/api/endpoints">
+    Browse every available endpoint for sites, time-series data, and file management with full parameter details.
+  </Card>
+  <Card title="nrgpy Python Library" icon="python" href="/api/nrgpy-python-library">
+    Use the open-source nrgpy library to authenticate, list files, convert RLD data, and work with pandas DataFrames.
+  </Card>
+  <Card title="NRG Cloud Portal" icon="cloud" href="https://cloud.nrgsystems.com">
+    Log in to your NRG Cloud account to manage sites, devices, and generate API credentials.
+  </Card>
+</CardGroup>
+
+## Authentication
+
+The NRG Cloud API uses **OAuth 2.0 client credentials** for authentication. You supply a `client_id` and `client_secret` to a token endpoint, which returns a short-lived Bearer token. Include that token in the `Authorization` header of every subsequent API request.
+
+```http
+Authorization: Bearer <your_access_token>
+```
+
+See the [Authentication guide](/api/authentication) for step-by-step instructions, code examples, and security best practices.
+
+## Response Format
+
+All responses are returned as **JSON**. Successful responses carry an HTTP `2xx` status code and a JSON body. Error responses include a machine-readable `error` field and a human-readable `message` field:
+
+```json
+{
+  "error": "invalid_token",
+  "message": "The access token has expired. Please request a new token."
+}
+```
+
+## Rate Limits
+
+To ensure fair usage across all customers, the API enforces the following default rate limits:
+
+| Scope | Limit |
+|---|---|
+| Authenticated requests | 100 requests per minute |
+| Token endpoint | 10 requests per minute |
+
+When you exceed the rate limit, the API returns `HTTP 429 Too Many Requests`. The response includes a `Retry-After` header indicating how many seconds to wait before retrying.
+
+<Tip>
+  If your integration requires higher rate limits, contact [NRG Systems support](https://www.nrgsystems.com/support) to discuss enterprise options.
+</Tip>
+
+## API Versioning
+
+The current API version is **v1**, reflected in the base URL path (`/api/v1`). When breaking changes are introduced, a new version will be released under a new path (e.g., `/api/v2`) while the previous version remains available during a transition period. Non-breaking additions — such as new optional fields or new endpoints — may be added to the current version without a version bump.
+
+<Note>
+  Subscribe to the [NRG Systems release notes](https://www.nrgsystems.com/support) to receive advance notice of any deprecation timelines.
+</Note>
+
+## Common HTTP Status Codes
+
+| Status Code | Meaning |
+|---|---|
+| `200 OK` | Request succeeded |
+| `201 Created` | Resource created successfully (e.g., file conversion queued) |
+| `400 Bad Request` | Missing or invalid request parameters |
+| `401 Unauthorized` | Missing, invalid, or expired Bearer token |
+| `403 Forbidden` | Valid token but insufficient permissions |
+| `404 Not Found` | The requested resource does not exist |
+| `429 Too Many Requests` | Rate limit exceeded |
+| `500 Internal Server Error` | Unexpected server-side error |
+
+## Quick Start
+
+Follow these three steps to make your first API call:
+
+<Steps>
+  <Step title="Generate API credentials">
+    Log in to the [NRG Cloud portal](https://cloud.nrgsystems.com), navigate to **Settings → API Credentials**, and create a new client ID and secret.
+  </Step>
+  <Step title="Request a Bearer token">
+    POST your credentials to the token endpoint to receive an `access_token`. See [Authentication](/api/authentication) for the full example.
+  </Step>
+  <Step title="Call an endpoint">
+    Include the Bearer token in your `Authorization` header and call any endpoint in the [Endpoints Reference](/api/endpoints).
+  </Step>
+</Steps>

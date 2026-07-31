@@ -1,0 +1,286 @@
+---
+title: 'nrgpy Python Library — NRG Cloud API Client Guide'
+sidebarTitle: 'nrgpy Library'
+description: 'Install and use the open-source nrgpy library to authenticate, list files, convert RLD data, and load wind and solar measurements into pandas DataFrames.'
+---
+
+**nrgpy** is an open-source Python library maintained by NRG Systems that gives you a convenient, high-level interface for working with your NRG Cloud data — no raw HTTP calls required. With nrgpy you can authenticate against the NRG Cloud API, list and filter data files by site or logger serial number, trigger RLD-to-text conversions, download files, and load the results directly into pandas DataFrames for analysis. The library also supports reading Symphonie exported text files from your local filesystem, so it works equally well for offline workflows.
+
+<CardGroup cols={2}>
+  <Card title="nrgpy on GitHub" icon="github" href="https://github.com/nrgpy/nrgpy">
+    View the source code, open issues, and contribute to the project.
+  </Card>
+  <Card title="NRG Cloud API Reference" icon="brackets-curly" href="/api/endpoints">
+    Explore the underlying REST endpoints that nrgpy calls on your behalf.
+  </Card>
+</CardGroup>
+
+## Requirements
+
+- Python **3.6** or later
+- [pandas](https://pandas.pydata.org/) — for DataFrame access to measurement data
+- [requests](https://requests.readthedocs.io/) — for HTTP communication with the NRG Cloud API
+
+Both `pandas` and `requests` are installed automatically as dependencies when you install nrgpy.
+
+## Installation
+
+Install nrgpy from PyPI using pip:
+
+```bash
+pip install nrgpy
+```
+
+To upgrade to the latest version:
+
+```bash
+pip install --upgrade nrgpy
+```
+
+<Tip>
+  We recommend installing nrgpy inside a virtual environment (e.g., `venv` or `conda`) to avoid dependency conflicts with other projects.
+</Tip>
+
+## Authenticating with NRG Cloud
+
+Before calling any cloud function, create an authenticated session using your `client_id` and `client_secret`. You can find these in the NRG Cloud portal under **Settings → API Credentials** — see [Authentication](/api/authentication) for full instructions on generating credentials.
+
+```python
+import nrgpy
+
+# Authenticate with NRG Cloud
+auth = nrgpy.cloud_api.cloud_api(
+    client_id="YOUR_CLIENT_ID",
+    client_secret="YOUR_CLIENT_SECRET"
+)
+```
+
+The `cloud_api` object handles token acquisition and renewal automatically. You pass it to every subsequent nrgpy cloud function.
+
+<Note>
+  Store your credentials in environment variables rather than hard-coding them in your scripts. See [Authentication — Security Best Practices](/api/authentication#security-best-practices) for details.
+</Note>
+
+```python
+import os
+import nrgpy
+
+auth = nrgpy.cloud_api.cloud_api(
+    client_id=os.environ["NRG_CLIENT_ID"],
+    client_secret=os.environ["NRG_CLIENT_SECRET"]
+)
+```
+
+## Listing Available Files
+
+Once authenticated, use `list_files` to retrieve the files available for a specific logger by serial number. You can further filter by date range or file format.
+
+<CodeGroup>
+
+```python List files by serial number
+import nrgpy
+
+auth = nrgpy.cloud_api.cloud_api(
+    client_id="YOUR_CLIENT_ID",
+    client_secret="YOUR_CLIENT_SECRET"
+)
+
+# List all available files for logger 820612345
+files = nrgpy.cloud_api.list_files(auth, serial_number="820612345")
+
+# 'files' is a list of filenames
+for f in files:
+    print(f)
+```
+
+```python Filter by date range
+import nrgpy
+
+auth = nrgpy.cloud_api.cloud_api(
+    client_id="YOUR_CLIENT_ID",
+    client_secret="YOUR_CLIENT_SECRET"
+)
+
+# List files within a specific date range
+files = nrgpy.cloud_api.list_files(
+    auth,
+    serial_number="820612345",
+    start_date="2024-01-01",
+    end_date="2024-03-31"
+)
+
+print(f"Found {len(files)} file(s).")
+```
+
+</CodeGroup>
+
+## Converting and Downloading an RLD File
+
+Raw logger data is stored in NRG's binary `.rld` format. Use `convert_file` to request server-side conversion to a Symphonie text export and automatically download the result to a local directory.
+
+```python
+import nrgpy
+
+auth = nrgpy.cloud_api.cloud_api(
+    client_id="YOUR_CLIENT_ID",
+    client_secret="YOUR_CLIENT_SECRET"
+)
+
+# List available RLD files for the logger
+files = nrgpy.cloud_api.list_files(auth, serial_number="820612345")
+
+# Convert the first file and download it to a local folder
+reader = nrgpy.cloud_api.convert_file(
+    auth,
+    filename=files[0],
+    out_dir="/path/to/output"
+)
+```
+
+The `convert_file` function:
+1. Submits a conversion job to the NRG Cloud API (`POST /files/convert`)
+2. Polls for completion
+3. Downloads the converted text file to `out_dir`
+4. Returns a reader object with the parsed data already loaded
+
+## Accessing Data as a pandas DataFrame
+
+The reader object returned by `convert_file` exposes your measurement data through a `.data` attribute that is a standard pandas DataFrame, with timestamps as the index and channels as columns.
+
+```python
+import nrgpy
+
+auth = nrgpy.cloud_api.cloud_api(
+    client_id="YOUR_CLIENT_ID",
+    client_secret="YOUR_CLIENT_SECRET"
+)
+
+files = nrgpy.cloud_api.list_files(auth, serial_number="820612345")
+
+reader = nrgpy.cloud_api.convert_file(
+    auth,
+    filename=files[0],
+    out_dir="/path/to/output"
+)
+
+# Access the full dataset as a DataFrame
+df = reader.data
+print(df.head())
+
+# Example: calculate mean wind speed for a specific channel
+mean_ws = df["WS_80m_Avg"].mean()
+print(f"Mean wind speed at 80 m: {mean_ws:.2f} m/s")
+```
+
+<Tip>
+  The DataFrame index is a `DatetimeIndex` in the site's local timezone. Use `df.resample('1H').mean()` to quickly aggregate 10-minute data to hourly averages.
+</Tip>
+
+## Full Cloud Workflow Example
+
+Here is a complete end-to-end example combining authentication, file listing, conversion, and data analysis:
+
+```python
+import os
+import nrgpy
+
+# 1. Authenticate
+auth = nrgpy.cloud_api.cloud_api(
+    client_id=os.environ["NRG_CLIENT_ID"],
+    client_secret=os.environ["NRG_CLIENT_SECRET"]
+)
+
+# 2. List files for a logger
+serial = "820612345"
+files = nrgpy.cloud_api.list_files(
+    auth,
+    serial_number=serial,
+    start_date="2024-03-01",
+    end_date="2024-03-31"
+)
+
+print(f"Found {len(files)} file(s) for logger {serial}.")
+
+# 3. Convert and download each file
+out_dir = "./nrg_data"
+for filename in files:
+    reader = nrgpy.cloud_api.convert_file(
+        auth,
+        filename=filename,
+        out_dir=out_dir
+    )
+
+    df = reader.data
+    print(f"\nFile: {filename}")
+    print(f"  Records:  {len(df)}")
+    print(f"  Channels: {list(df.columns)}")
+    print(df.describe())
+```
+
+## Reading Local Symphonie Text Files
+
+If you have Symphonie exported text files on your local machine — exported directly from a logger or downloaded previously — you can load them with nrgpy's `symphonieplus_export` class without any API authentication.
+
+<CodeGroup>
+
+```python Read a local export file
+import nrgpy
+
+# Load a local Symphonie exported text file
+reader = nrgpy.symphonieplus_export.symphonieplus_export(
+    file_path="/path/to/export.txt"
+)
+
+# Access data as a pandas DataFrame
+df = reader.data
+print(df.head())
+```
+
+```python Inspect site metadata
+import nrgpy
+
+reader = nrgpy.symphonieplus_export.symphonieplus_export(
+    file_path="/path/to/export.txt"
+)
+
+# Site and logger metadata parsed from the file header
+print(reader.site_description)
+print(reader.logger_serial_number)
+print(reader.start_date)
+print(reader.end_date)
+```
+
+</CodeGroup>
+
+The `.data` DataFrame contains exactly the same structure as the cloud-based workflow — timestamps as the index and one column per measurement channel — making it easy to write analysis code that works with both local and cloud-sourced data.
+
+## Available Reader Attributes
+
+Once a file is loaded (whether via `convert_file` or `symphonieplus_export`), the reader object exposes the following key attributes:
+
+| Attribute | Type | Description |
+|---|---|---|
+| `reader.data` | `pd.DataFrame` | Time-indexed measurement data with one column per channel |
+| `reader.site_description` | `str` | Site name and description from the file header |
+| `reader.logger_serial_number` | `str` | Serial number of the data logger |
+| `reader.start_date` | `str` | Timestamp of the first record in the file |
+| `reader.end_date` | `str` | Timestamp of the last record in the file |
+| `reader.channel_list` | `list` | Names of all channels present in the file |
+
+## Troubleshooting
+
+<Expandable title="Authentication errors (401 Unauthorized)">
+  Check that your `client_id` and `client_secret` are correct and have not been revoked. Credentials can be reviewed in **Settings → API Credentials** in the NRG Cloud portal. If your token has expired, `cloud_api` will refresh it automatically — ensure the system clock on your machine is accurate, as large clock skew can cause JWT validation failures.
+</Expandable>
+
+<Expandable title="No files returned by list_files">
+  Verify the `serial_number` argument matches exactly the logger serial shown in the NRG Cloud portal (including leading digits). Also confirm your account has access to the site containing that logger. If filtering by date, check that the `start_date` and `end_date` strings are in `YYYY-MM-DD` format.
+</Expandable>
+
+<Expandable title="convert_file raises a timeout error">
+  Conversion of large RLD files can take longer than the default timeout. Try splitting the date range into smaller batches (e.g., one month at a time) or increase the timeout parameter if your version of nrgpy supports it. You can also monitor job progress directly in the NRG Cloud portal under **Files**.
+</Expandable>
+
+<Expandable title="DataFrame is empty after loading a local file">
+  Ensure the file path passed to `symphonieplus_export` is correct and the file is a valid Symphonie text export (not a raw `.rld` binary). The class expects the plain-text format produced by the Symphonie Data Retriever desktop application or the NRG Cloud conversion service.
+</Expandable>

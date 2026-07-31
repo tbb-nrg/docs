@@ -1,0 +1,81 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "almond",
+  "name": "NRG Cloud",
+  "colors": {
+    "primary": "#fcdc04",
+    "light": "#fcdc04",
+    "dark": "#c9a800"
+  },
+  "favicon": "https://media.brand.dev/85907d02-e2a7-4bbd-a3c6-a4079101307b.png",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "getting-started/account-setup",
+              "getting-started/logging-in",
+              "getting-started/dashboard-overview"
+            ]
+          },
+          {
+            "group": "Data Management",
+            "pages": [
+              "data/sites-and-devices",
+              "data/viewing-data",
+              "data/downloading-data",
+              "data/data-formats"
+            ]
+          },
+          {
+            "group": "Equipment & Configuration",
+            "pages": [
+              "equipment/supported-hardware",
+              "equipment/logr-logger",
+              "equipment/zx300e-lidar",
+              "equipment/remote-configuration"
+            ]
+          },
+          {
+            "group": "API Access",
+            "pages": [
+              "api/overview",
+              "api/authentication",
+              "api/endpoints",
+              "api/nrgpy-python-library"
+            ]
+          },
+          {
+            "group": "Support",
+            "pages": [
+              "support/troubleshooting",
+              "support/faq"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "NRG Systems",
+        "href": "https://www.nrgsystems.com"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Log In to NRG Cloud",
+      "href": "https://cloud.nrgsystems.com"
+    }
+  },
+  "footer": {
+    "socials": {
+      "linkedin": "https://www.linkedin.com/company/nrg-systems"
+    }
+  }
+}

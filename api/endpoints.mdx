@@ -1,0 +1,566 @@
+---
+title: 'NRG Cloud REST API Endpoints — Complete Reference Guide'
+sidebarTitle: 'Endpoints'
+description: 'Complete reference for all NRG Cloud REST API endpoints — list sites, retrieve time-series data, manage files, and trigger conversions.'
+---
+
+This reference documents every endpoint available in the NRG Cloud REST API. All requests must include a valid Bearer token in the `Authorization` header — see [Authentication](/api/authentication) if you have not yet set that up. Endpoints are grouped by resource type: **Sites**, **Data**, and **Files**. For each endpoint you will find the method and path, a description, parameter details, an example request, and a sample response.
+
+**Base URL:** `https://cloud.nrgsystems.com/api/v1`
+
+---
+
+## Sites
+
+Use the Sites endpoints to discover which monitoring locations are associated with your NRG Cloud account and to retrieve detailed configuration for each one.
+
+### List All Sites
+
+Retrieve a list of every site linked to your account.
+
+```
+GET /sites
+```
+
+This endpoint requires no query parameters. It returns all sites you have access to, ordered by site name.
+
+#### Example Request
+
+```bash cURL
+curl -X GET https://cloud.nrgsystems.com/api/v1/sites \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+#### Example Response
+
+```json
+[
+  {
+    "id": "site_001",
+    "name": "Blue Ridge Wind Farm - Met Tower 1",
+    "latitude": 36.4285,
+    "longitude": -82.1743,
+    "timezone": "America/New_York",
+    "device_count": 3
+  },
+  {
+    "id": "site_002",
+    "name": "Mojave Solar Station A",
+    "latitude": 35.0517,
+    "longitude": -117.6508,
+    "timezone": "America/Los_Angeles",
+    "device_count": 1
+  }
+]
+```
+
+#### Response Fields
+
+<ResponseField name="id" type="string">
+  Unique identifier for the site. Use this value as `site_id` in other endpoint paths.
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  Human-readable name assigned to the site in the NRG Cloud portal.
+</ResponseField>
+
+<ResponseField name="latitude" type="number">
+  Site latitude in decimal degrees (WGS 84).
+</ResponseField>
+
+<ResponseField name="longitude" type="number">
+  Site longitude in decimal degrees (WGS 84).
+</ResponseField>
+
+<ResponseField name="timezone" type="string">
+  IANA timezone identifier for the site's local time (e.g., `America/Chicago`).
+</ResponseField>
+
+<ResponseField name="device_count" type="integer">
+  Number of data-collection devices (loggers or sensors) registered at this site.
+</ResponseField>
+
+---
+
+### Get a Single Site
+
+Retrieve detailed information about one site, including its associated device list.
+
+```
+GET /sites/{site_id}
+```
+
+#### Path Parameter
+
+<ParamField path="site_id" type="string" required>
+  The unique identifier of the site, as returned by `GET /sites`.
+</ParamField>
+
+#### Example Request
+
+```bash cURL
+curl -X GET https://cloud.nrgsystems.com/api/v1/sites/site_001 \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+#### Example Response
+
+```json
+{
+  "id": "site_001",
+  "name": "Blue Ridge Wind Farm - Met Tower 1",
+  "latitude": 36.4285,
+  "longitude": -82.1743,
+  "timezone": "America/New_York",
+  "device_count": 3,
+  "devices": [
+    {
+      "serial_number": "820612345",
+      "model": "Symphonie Data Logger",
+      "firmware_version": "6.12",
+      "last_upload": "2024-05-20T14:32:00Z"
+    },
+    {
+      "serial_number": "820698765",
+      "model": "Symphonie DATA PLUS 3",
+      "firmware_version": "5.04",
+      "last_upload": "2024-05-19T09:10:00Z"
+    }
+  ]
+}
+```
+
+#### Response Fields
+
+<ResponseField name="id" type="string">
+  Unique site identifier.
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  Human-readable site name.
+</ResponseField>
+
+<ResponseField name="latitude" type="number">
+  Site latitude in decimal degrees.
+</ResponseField>
+
+<ResponseField name="longitude" type="number">
+  Site longitude in decimal degrees.
+</ResponseField>
+
+<ResponseField name="timezone" type="string">
+  IANA timezone identifier for the site.
+</ResponseField>
+
+<ResponseField name="device_count" type="integer">
+  Total number of devices at this site.
+</ResponseField>
+
+<ResponseField name="devices" type="array">
+  Array of device objects associated with this site.
+
+  <Expandable title="Device object fields">
+    <ResponseField name="serial_number" type="string">
+      The device's serial number, used to query files for this logger.
+    </ResponseField>
+    <ResponseField name="model" type="string">
+      Device model name.
+    </ResponseField>
+    <ResponseField name="firmware_version" type="string">
+      Currently installed firmware version on the device.
+    </ResponseField>
+    <ResponseField name="last_upload" type="string">
+      ISO 8601 timestamp of the most recent data upload from this device.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+---
+
+### List Devices at a Site
+
+Retrieve a list of all devices registered at a specific site. Use this endpoint to discover logger serial numbers, check device status, and confirm when each device last reported data.
+
+```
+GET /sites/{site_id}/devices
+```
+
+#### Path Parameter
+
+<ParamField path="site_id" type="string" required>
+  The unique identifier of the site whose devices you want to list, as returned by `GET /sites`.
+</ParamField>
+
+#### Example Request
+
+```bash cURL
+curl -X GET https://cloud.nrgsystems.com/api/v1/sites/site_001/devices \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+#### Example Response
+
+```json
+[
+  {
+    "id": "dev_001",
+    "serial_number": "820612345",
+    "type": "Symphonie Data Logger",
+    "name": "Met Tower 1 — Primary Logger",
+    "status": "active",
+    "last_seen": "2024-05-20T14:32:00Z"
+  },
+  {
+    "id": "dev_002",
+    "serial_number": "820698765",
+    "type": "Symphonie DATA PLUS 3",
+    "name": "Met Tower 1 — Backup Logger",
+    "status": "inactive",
+    "last_seen": "2024-04-11T09:10:00Z"
+  }
+]
+```
+
+#### Response Fields
+
+<ResponseField name="id" type="string">
+  Unique identifier for this device record within NRG Cloud.
+</ResponseField>
+
+<ResponseField name="serial_number" type="string">
+  The device's serial number. Use this value as the `serial_number` filter when calling `GET /files` to retrieve data files from this logger.
+</ResponseField>
+
+<ResponseField name="type" type="string">
+  Device model or type (e.g., `Symphonie Data Logger`, `Symphonie DATA PLUS 3`).
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  Human-readable label assigned to the device in the NRG Cloud portal.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current device status. Possible values: `active` (reporting data normally), `inactive` (not recently seen), or `decommissioned` (removed from service).
+</ResponseField>
+
+<ResponseField name="last_seen" type="string">
+  ISO 8601 UTC timestamp of the most recent data upload received from this device.
+</ResponseField>
+
+---
+
+## Data
+
+The Data endpoint returns time-series measurement records for a given site. You can filter by date range, select specific channels, and choose the averaging interval.
+
+### Retrieve Time-Series Measurement Data
+
+```
+GET /sites/{site_id}/data
+```
+
+#### Path Parameter
+
+<ParamField path="site_id" type="string" required>
+  The unique identifier of the site whose data you want to retrieve.
+</ParamField>
+
+#### Query Parameters
+
+<ParamField query="start_date" type="string" required>
+  The start of the requested time range in ISO 8601 format (e.g., `2024-01-01T00:00:00Z`). The response includes records at or after this timestamp.
+</ParamField>
+
+<ParamField query="end_date" type="string" required>
+  The end of the requested time range in ISO 8601 format (e.g., `2024-01-31T23:50:00Z`). The response includes records up to and including this timestamp.
+</ParamField>
+
+<ParamField query="channels" type="string">
+  A comma-separated list of channel names to include in the response (e.g., `WS_80m_Avg,WD_80m_Avg,Temp_2m_Avg`). If omitted, all available channels are returned.
+</ParamField>
+
+<ParamField query="interval" type="string">
+  The averaging interval for the returned data. Accepted values: `10min` (default) or `1hour`.
+</ParamField>
+
+#### Example Request
+
+```bash cURL
+curl -X GET \
+  "https://cloud.nrgsystems.com/api/v1/sites/site_001/data?start_date=2024-03-01T00:00:00Z&end_date=2024-03-01T01:00:00Z&channels=WS_80m_Avg,WD_80m_Avg&interval=10min" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+#### Example Response
+
+```json
+{
+  "site_id": "site_001",
+  "start_date": "2024-03-01T00:00:00Z",
+  "end_date": "2024-03-01T01:00:00Z",
+  "interval": "10min",
+  "channels": [
+    {
+      "name": "WS_80m_Avg",
+      "unit": "m/s",
+      "data": [
+        { "timestamp": "2024-03-01T00:00:00Z", "value": 7.34, "quality": 1 },
+        { "timestamp": "2024-03-01T00:10:00Z", "value": 7.81, "quality": 1 },
+        { "timestamp": "2024-03-01T00:20:00Z", "value": 6.95, "quality": 1 },
+        { "timestamp": "2024-03-01T00:30:00Z", "value": 7.12, "quality": 1 },
+        { "timestamp": "2024-03-01T00:40:00Z", "value": 7.60, "quality": 1 },
+        { "timestamp": "2024-03-01T00:50:00Z", "value": 7.44, "quality": 1 }
+      ]
+    },
+    {
+      "name": "WD_80m_Avg",
+      "unit": "degrees",
+      "data": [
+        { "timestamp": "2024-03-01T00:00:00Z", "value": 214.5, "quality": 1 },
+        { "timestamp": "2024-03-01T00:10:00Z", "value": 218.3, "quality": 1 },
+        { "timestamp": "2024-03-01T00:20:00Z", "value": 210.1, "quality": 1 },
+        { "timestamp": "2024-03-01T00:30:00Z", "value": 221.7, "quality": 1 },
+        { "timestamp": "2024-03-01T00:40:00Z", "value": 216.2, "quality": 1 },
+        { "timestamp": "2024-03-01T00:50:00Z", "value": 213.9, "quality": 1 }
+      ]
+    }
+  ]
+}
+```
+
+#### Response Fields
+
+<ResponseField name="site_id" type="string">
+  Identifier of the site whose data is returned.
+</ResponseField>
+
+<ResponseField name="start_date" type="string">
+  Effective start of the returned data range (ISO 8601).
+</ResponseField>
+
+<ResponseField name="end_date" type="string">
+  Effective end of the returned data range (ISO 8601).
+</ResponseField>
+
+<ResponseField name="interval" type="string">
+  Averaging interval applied to the data: `10min` or `1hour`.
+</ResponseField>
+
+<ResponseField name="channels" type="array">
+  Array of channel objects, one per requested channel.
+
+  <Expandable title="Channel object fields">
+    <ResponseField name="name" type="string">
+      Channel name as configured on the logger.
+    </ResponseField>
+    <ResponseField name="unit" type="string">
+      Engineering unit for the channel's values (e.g., `m/s`, `degrees`, `°C`).
+    </ResponseField>
+    <ResponseField name="data" type="array">
+      Ordered array of time-stamped records.
+
+      <Expandable title="Data record fields">
+        <ResponseField name="timestamp" type="string">
+          ISO 8601 UTC timestamp for the start of the averaging period.
+        </ResponseField>
+        <ResponseField name="value" type="number">
+          Measured or averaged value for this interval.
+        </ResponseField>
+        <ResponseField name="quality" type="integer">
+          Quality flag: `1` = valid, `0` = flagged or suspect, `-1` = missing.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<Note>
+  A single request is limited to a maximum of 31 days of 10-minute data or 365 days of hourly data. For longer date ranges, paginate by splitting your date range across multiple requests.
+</Note>
+
+---
+
+## Files
+
+The Files endpoints let you list, convert, and download the raw and processed data files stored in your NRG Cloud account.
+
+### List Data Files
+
+Retrieve a list of files available in your account, with optional filtering.
+
+```
+GET /files
+```
+
+#### Query Parameters
+
+<ParamField query="site_id" type="string">
+  Filter files to those belonging to the specified site.
+</ParamField>
+
+<ParamField query="serial_number" type="string">
+  Filter files to those uploaded by a specific logger serial number (e.g., `820612345`).
+</ParamField>
+
+<ParamField query="start_date" type="string">
+  Return only files created on or after this date (ISO 8601, e.g., `2024-01-01`).
+</ParamField>
+
+<ParamField query="end_date" type="string">
+  Return only files created on or before this date (ISO 8601, e.g., `2024-03-31`).
+</ParamField>
+
+<ParamField query="format" type="string">
+  Filter by file format. Accepted values: `rld`, `txt`, `csv`.
+</ParamField>
+
+#### Example Request
+
+```bash cURL
+curl -X GET \
+  "https://cloud.nrgsystems.com/api/v1/files?serial_number=820612345&format=rld&start_date=2024-03-01&end_date=2024-03-31" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+#### Example Response
+
+```json
+[
+  {
+    "id": "file_abc123",
+    "filename": "820612345_2024-03-01_2024-03-15.rld",
+    "site_id": "site_001",
+    "created_at": "2024-03-15T08:22:11Z",
+    "size_bytes": 2097152,
+    "format": "rld"
+  },
+  {
+    "id": "file_def456",
+    "filename": "820612345_2024-03-15_2024-03-31.rld",
+    "site_id": "site_001",
+    "created_at": "2024-03-31T07:55:44Z",
+    "size_bytes": 2150400,
+    "format": "rld"
+  }
+]
+```
+
+#### Response Fields
+
+<ResponseField name="id" type="string">
+  Unique file identifier. Use this as `file_id` in the convert and download endpoints.
+</ResponseField>
+
+<ResponseField name="filename" type="string">
+  Original filename as stored in NRG Cloud.
+</ResponseField>
+
+<ResponseField name="site_id" type="string">
+  Identifier of the site this file belongs to.
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  ISO 8601 UTC timestamp of when the file was uploaded to NRG Cloud.
+</ResponseField>
+
+<ResponseField name="size_bytes" type="integer">
+  File size in bytes.
+</ResponseField>
+
+<ResponseField name="format" type="string">
+  File format: `rld` (raw binary), `txt` (Symphonie text export), or `csv`.
+</ResponseField>
+
+---
+
+### Convert a Raw RLD File
+
+Request server-side conversion of a raw `.rld` binary file into a human-readable text or CSV format.
+
+```
+POST /files/convert
+```
+
+#### Request Body
+
+<ParamField body="file_id" type="string" required>
+  The unique identifier of the RLD file to convert, as returned by `GET /files`.
+</ParamField>
+
+#### Example Request
+
+```bash cURL
+curl -X POST https://cloud.nrgsystems.com/api/v1/files/convert \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"file_id": "file_abc123"}'
+```
+
+#### Example Response
+
+```json
+{
+  "conversion_id": "conv_xyz789",
+  "status": "pending"
+}
+```
+
+#### Response Fields
+
+<ResponseField name="conversion_id" type="string">
+  Unique identifier for this conversion job. You can use this to track the job's status.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current status of the conversion. Initial value is always `pending`. Once complete, the converted file appears in `GET /files` results with `format: txt`.
+</ResponseField>
+
+<Tip>
+  Conversion typically completes within a few seconds for files under 5 MB. After submitting a conversion, poll `GET /files?serial_number=<your_serial>` until the converted file appears, then use `GET /files/{file_id}/download` to retrieve it.
+</Tip>
+
+---
+
+### Get a File Download URL
+
+Obtain a pre-signed, time-limited URL for downloading a file directly.
+
+```
+GET /files/{file_id}/download
+```
+
+#### Path Parameter
+
+<ParamField path="file_id" type="string" required>
+  The unique identifier of the file you want to download.
+</ParamField>
+
+#### Example Request
+
+```bash cURL
+curl -X GET https://cloud.nrgsystems.com/api/v1/files/file_abc123/download \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+#### Example Response
+
+```json
+{
+  "download_url": "https://storage.cloud.nrgsystems.com/files/820612345_2024-03-01_2024-03-15.rld?token=abc...xyz&expires=1716300000",
+  "expires_at": "2024-05-21T15:00:00Z"
+}
+```
+
+#### Response Fields
+
+<ResponseField name="download_url" type="string">
+  A pre-signed URL you can use to download the file directly — no `Authorization` header required. Pass this URL to `curl`, `wget`, or your HTTP client's GET method.
+</ResponseField>
+
+<ResponseField name="expires_at" type="string">
+  ISO 8601 UTC timestamp after which the `download_url` is no longer valid. Download URLs are valid for **15 minutes** by default.
+</ResponseField>
+
+<Warning>
+  Download URLs expire after 15 minutes. If the URL expires before the download completes, call `GET /files/{file_id}/download` again to obtain a fresh URL.
+</Warning>

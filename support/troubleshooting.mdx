@@ -1,0 +1,183 @@
+---
+title: "Troubleshoot NRG Cloud Device and Data Issues"
+sidebarTitle: "Troubleshooting"
+description: "Resolve common NRG Cloud problems including offline devices, data gaps, login failures, download errors, and API authentication issues."
+---
+
+When something isn't working as expected in NRG Cloud, most issues fall into a handful of well-understood categories — connectivity, data delivery, authentication, or API access. Work through the relevant section below to diagnose the problem and restore normal operation. If you exhaust all steps without resolution, contact NRG Systems support at [support@nrgsystems.com](mailto:support@nrgsystems.com).
+
+---
+
+## Device Issues
+
+<Accordion title="Device shows 'Offline' in NRG Cloud">
+  A device appears **Offline** when NRG Cloud has not received a transmission within the expected communication window. Work through the following checks in order.
+
+  <Steps>
+    <Step title="Check signal at the site">
+      Confirm that cellular or satellite coverage is available at the installation location. Temporary outages, terrain obstructions, or carrier maintenance windows can all interrupt transmission. Consult your carrier's coverage map or site visit logs.
+    </Step>
+    <Step title="Verify SIM card status and data plan">
+      Log in to your carrier's management portal and confirm the SIM card is active and that the data plan has not been exhausted or suspended. Top up or renew the plan if necessary before retesting.
+    </Step>
+    <Step title="Review the communication interval setting">
+      In NRG Cloud, navigate to **Device Settings** for the affected device and confirm the communication interval is configured as intended. An unexpectedly long interval (for example, 24 hours) can make a device appear offline between transmissions even when it is functioning normally.
+    </Step>
+    <Step title="Power cycle the device">
+      A full power cycle clears transient firmware faults and forces the modem to re-register with the network. Remove power, wait 30 seconds, then restore power. Allow up to one full communication interval before checking status again.
+    </Step>
+    <Step title="Contact NRG Systems support">
+      If the device remains offline after completing all steps above, contact NRG Systems support with the device serial number, site name, and the approximate time the device last reported. The support team can inspect server-side logs for further diagnostics.
+    </Step>
+  </Steps>
+
+  <Note>
+    The **Last Communication** timestamp on the device detail page tells you exactly when NRG Cloud last received data. Use this to cross-reference against any known site events such as power outages or maintenance visits.
+  </Note>
+</Accordion>
+
+---
+
+## Data Issues
+
+<Accordion title="Missing data for a time period">
+  Data gaps appear as blank segments on the data visualization chart. Several conditions can produce them — identify which applies to your situation before taking action.
+
+  <Steps>
+    <Step title="Check whether the device was offline during that period">
+      Open the device's **Event Log** in NRG Cloud and look for offline events, communication failures, or power interruptions that overlap with the gap. If the device was offline, the root cause is connectivity — see the *Device shows 'Offline'* section above.
+    </Step>
+    <Step title="Review the communication schedule">
+      Navigate to **Device Settings** and confirm the upload frequency. A device configured to transmit once per hour, for example, will show apparent gaps if you expect 10-minute data delivery. Adjust the schedule if needed and note that the change applies to future transmissions only.
+    </Step>
+    <Step title="Wait for backfill from local storage">
+      Most NRG devices — including the LOGR Met Data Logger — store measurements locally on an SD card or internal flash memory even when connectivity is unavailable. Once the device reconnects, it automatically uploads stored records and backfills the gap. Allow at least one full communication cycle after connectivity is restored before concluding that data is permanently lost.
+    </Step>
+  </Steps>
+
+  <Tip>
+    Before exporting data that contains gaps, check the chart view in NRG Cloud to confirm which periods have records. Exporting a range that includes a gap will produce a file with missing rows rather than an error message.
+  </Tip>
+</Accordion>
+
+---
+
+## Login Issues
+
+<Accordion title="Can't log in to NRG Cloud">
+  Authentication problems are usually caused by incorrect credentials, a stale browser session, or an account status change. Try each step below before contacting your administrator.
+
+  <Steps>
+    <Step title="Reset your password">
+      On the NRG Cloud login page, click **Forgot password** and enter the email address associated with your account. You will receive a reset link within a few minutes. Check your spam or junk folder if the email does not arrive promptly.
+    </Step>
+    <Step title="Clear browser cookies and cache">
+      A corrupted session cookie can prevent successful login even with correct credentials. Clear your browser's cookies and cached data, then close and reopen the browser before attempting to log in again.
+    </Step>
+    <Step title="Try incognito or private browsing">
+      Open a private browsing window (Chrome: `Ctrl+Shift+N` / `Cmd+Shift+N`; Firefox: `Ctrl+Shift+P` / `Cmd+Shift+P`) and attempt to log in from there. A successful login in private mode confirms that a browser extension or cached credential is the cause.
+    </Step>
+    <Step title="Check whether your account has been deactivated">
+      If none of the above steps resolve the issue, your account may have been deactivated by an organization administrator. Contact your NRG Cloud admin or reach out to NRG Systems support to verify your account status.
+    </Step>
+  </Steps>
+
+  <Warning>
+    After five consecutive failed login attempts, NRG Cloud temporarily locks the account to protect against unauthorized access. Wait 15 minutes before trying again, or use the **Forgot password** flow to regain immediate access.
+  </Warning>
+</Accordion>
+
+---
+
+## Data Download Issues
+
+<Accordion title="Download button not working or file is empty">
+  If clicking the download button produces no file, triggers a browser error, or results in an empty file, work through the following checks.
+
+  <Steps>
+    <Step title="Confirm the selected date range contains data">
+      Before downloading, review the chart for the date range you selected. If the chart shows no data, the download will produce an empty file. Adjust the date range to a period where the chart confirms records exist.
+    </Step>
+    <Step title="Try a smaller date range">
+      Very large exports — spanning months or years at high resolution — can time out before the file is ready. Narrow the range to a few weeks, download successfully, and repeat for additional periods if needed.
+    </Step>
+    <Step title="Disable pop-up blockers">
+      Some browsers block the download dialog triggered by NRG Cloud. Check your browser's address bar for a blocked pop-up notification and allow downloads from `nrgcloud.com`. You may also need to disable third-party pop-up blocker extensions temporarily.
+    </Step>
+  </Steps>
+
+  <Note>
+    Downloads are generated server-side and delivered as files. If your browser silently blocks the file, check the **Downloads** folder anyway — some browser configurations save the file without displaying a prompt.
+  </Note>
+</Accordion>
+
+---
+
+## API Issues
+
+<Accordion title="Getting 401 Unauthorized">
+  A `401 Unauthorized` response means the server could not validate your identity. This is almost always a token problem.
+
+  <Steps>
+    <Step title="Re-authenticate to obtain a fresh token">
+      NRG Cloud API tokens expire after **1 hour**. If your token is older than that, request a new one by posting your credentials to the authentication endpoint:
+
+      ```bash
+      curl -X POST https://api.nrgsystems.com/api/authenticate \
+        -H "Content-Type: application/json" \
+        -d '{"username": "your@email.com", "password": "yourpassword"}'
+      ```
+
+      Use the `token` value returned in the response for all subsequent requests.
+    </Step>
+    <Step title="Verify the Authorization header format">
+      Confirm that every API request includes the token in the correct format. The header must be:
+
+      ```http
+      Authorization: Bearer <token>
+      ```
+
+      A missing `Bearer` prefix, extra whitespace, or a truncated token will all produce a `401` response.
+    </Step>
+  </Steps>
+
+  <Warning>
+    Never expose your API credentials or tokens in client-side code or public repositories. Store them in environment variables or a secrets manager.
+  </Warning>
+</Accordion>
+
+<Accordion title="Getting 429 Too Many Requests">
+  A `429 Too Many Requests` response means your application has exceeded the NRG Cloud API rate limit.
+
+  <Steps>
+    <Step title="Back off and retry after 60 seconds">
+      Stop sending requests immediately. Wait at least **60 seconds** before retrying. Continuing to send requests during the backoff window will not accelerate recovery and may extend the lockout period.
+    </Step>
+    <Step title="Implement exponential backoff in your application">
+      For production integrations, build in automatic retry logic with exponential backoff. A simple pattern in Python:
+
+      ```python
+      import time
+      import requests
+
+      def get_with_backoff(url, headers, max_retries=5):
+          for attempt in range(max_retries):
+              response = requests.get(url, headers=headers)
+              if response.status_code == 429:
+                  wait = 60 * (2 ** attempt)
+                  print(f"Rate limited. Retrying in {wait}s...")
+                  time.sleep(wait)
+              else:
+                  return response
+          raise Exception("Max retries exceeded")
+      ```
+    </Step>
+    <Step title="Reduce request frequency">
+      Review your integration to eliminate redundant or polling-style calls. Cache responses where the underlying data changes infrequently, and use date-range queries to fetch data in batches rather than record-by-record.
+    </Step>
+  </Steps>
+
+  <Info>
+    The NRG Cloud API enforces rate limits per authenticated user. If multiple applications share a single set of credentials, their combined request volume counts against the same limit. Consider using separate accounts for separate integrations.
+  </Info>
+</Accordion>

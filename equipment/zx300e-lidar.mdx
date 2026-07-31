@@ -1,0 +1,164 @@
+---
+title: 'ZX 300e Wind Lidar Integration and Configuration Guide'
+sidebarTitle: 'ZX 300e Lidar'
+description: 'Connect and configure your ZX 300e Wind Lidar in NRG Cloud, view vertical wind profiles, manage scan heights, and download IEC-classified measurement data.'
+---
+
+The ZX 300e is a vertical profiling continuous-wave Doppler lidar that measures wind speed, wind direction, and turbulence intensity across multiple heights simultaneously. Unlike a traditional met mast that requires sensors at every measurement level, a single ZX 300e replaces an entire tower instrumentation suite — scanning heights from 21 m to 200 m with configurable resolution and a measurement availability that meets the requirements of IEC 61400-12-1 wind turbine power performance testing. NRG Cloud serves as the remote management and data access layer for the ZX 300e, giving you live wind profile dashboards, configuration control, and seamless data export without requiring on-site access to the instrument.
+
+<Note>
+  The ZX 300e is an industry-leading vertical profiling wind lidar certified to the **IEC 61400-12-1** standard for wind turbine power performance measurements. Its classification makes it suitable for use in bankable wind resource assessments and due-diligence campaigns that require traceable, standards-compliant data.
+</Note>
+
+## Measurement Capabilities
+
+| Parameter | Specification |
+|---|---|
+| Measurement Heights | 21 m to 200 m (configurable) |
+| Number of Scan Heights | Up to 10 simultaneous heights |
+| Wind Speed Range | 1 m/s to 70 m/s |
+| Wind Direction | 0° to 360° |
+| Averaging Period | 1 minute, 10 minutes (configurable) |
+| IEC Classification | IEC 61400-12-1 compliant |
+
+## Connecting the ZX 300e to NRG Cloud
+
+The ZX 300e connects to NRG Cloud over an Ethernet interface, typically routed through an on-site cellular router or fixed broadband connection. Complete the following steps to register and pair your ZX 300e.
+
+<Steps>
+  <Step title="Prepare Network Access">
+    Ensure the ZX 300e has an active network connection. The lidar must be able to reach the public internet over TCP port 443 (HTTPS). If you are routing through a cellular router, verify that the router has an active SIM and is outputting a LAN connection to the ZX 300e's Ethernet port.
+  </Step>
+  <Step title="Retrieve the Device ID">
+    On the ZX 300e's local web interface (accessible at its LAN IP address), navigate to **System → Device Info**. Note the **Device ID** — a unique identifier in the format `ZX3-XXXXXXXX`. You will need this to register the instrument in NRG Cloud.
+  </Step>
+  <Step title="Add the Device in NRG Cloud">
+    In NRG Cloud, navigate to **Equipment** and click **Add Device**. Select **ZX 300e Wind Lidar** from the device type dropdown.
+  </Step>
+  <Step title="Enter the Device ID">
+    Paste the Device ID into the **Device ID** field. Assign a descriptive **Device Name** (for example, `Flatlands Campaign - ZX300e`) and optionally link the device to an existing **Project**.
+  </Step>
+  <Step title="Complete Pairing">
+    Click **Register Device**. NRG Cloud generates a unique **Pairing Token** and displays it on screen. On the ZX 300e's local web interface, navigate to **System → Cloud Connection** and enter this Pairing Token. Click **Connect** on the lidar interface. The device status in NRG Cloud transitions from **Pending** to **Online** within 60 seconds.
+  </Step>
+  <Step title="Confirm Data Flow">
+    Open the device detail page in NRG Cloud and click the **Wind Profile** tab. Confirm that the live wind profile chart is populating with measurements at your configured heights. If the chart is empty after five minutes, verify the network connection and pairing token on the ZX 300e local interface.
+  </Step>
+</Steps>
+
+<Info>
+  The ZX 300e Pairing Token expires after 30 minutes. If the token expires before you complete the pairing on the local interface, return to the NRG Cloud device registration page and click **Generate New Token** to issue a fresh one.
+</Info>
+
+## Viewing Wind Profiles in the Dashboard
+
+Once paired, the ZX 300e's data is available in real time through the NRG Cloud dashboard. Navigate to the device's **Wind Profile** tab to access the following views:
+
+### Live Wind Profile Chart
+
+The live profile chart plots wind speed and direction against measurement height for the most recent completed averaging period. Heights are displayed on the vertical axis (m above ground level), and wind speed is displayed on the horizontal axis (m/s). Direction is shown as an arrow overlay at each height.
+
+Use this view to:
+- Verify that the lidar is operating correctly after deployment
+- Detect wind shear anomalies or low-level jets in real time
+- Confirm that all configured scan heights are returning valid measurements
+
+### Time-Series Panel
+
+The time-series panel displays wind speed and direction at a selected single height over a user-defined time window. Use the **Height Selector** dropdown to switch between scan heights, and the **Time Range** picker to adjust the view from the past hour to the past 30 days.
+
+### Wind Rose
+
+The wind rose widget summarizes wind direction frequency and speed distribution at a selected height over the displayed time period. This view is useful for rapid site characterization during early campaign stages.
+
+<Tip>
+  Pin the **Wind Profile** tab for your most active ZX 300e devices to your NRG Cloud home dashboard for at-a-glance campaign monitoring. Click the **Pin to Dashboard** icon in the top-right corner of any chart widget.
+</Tip>
+
+## Configuration
+
+Adjust ZX 300e measurement and transmission settings from the **Configuration** tab on the device detail page. Changes are pushed to the lidar at its next check-in.
+
+### Scan Heights
+
+Configure up to 10 simultaneous measurement heights between 21 m and 200 m. To edit the scan height list:
+
+1. Click **Edit** next to the **Scan Heights** field.
+2. Enter height values in meters, one per line, in ascending order.
+3. Click **Save**. NRG Cloud validates that all heights are within the 21–200 m operating range and that no two heights are closer than 10 m apart (the minimum vertical resolution).
+
+```text
+# Example scan height configuration
+40
+60
+80
+100
+120
+140
+160
+180
+200
+```
+
+<Warning>
+  Changing scan heights during an active campaign interrupts the continuous height record at removed levels. Plan height configuration changes at the start of a new measurement period if continuity of the vertical profile record is required for your analysis.
+</Warning>
+
+### Averaging Period
+
+The ZX 300e supports 1-minute and 10-minute averaging periods. Select your preferred interval from the **Averaging Period** dropdown in the Configuration tab. 10-minute averages are standard for IEC power performance assessments and long-term resource campaigns. Use 1-minute averages only when high-temporal-resolution data is specifically required, as this increases data volume and transmission frequency.
+
+### Data Transmission Interval
+
+Set how often the ZX 300e pushes completed averages to NRG Cloud. Options range from **every averaging period** (real-time continuous) to **every 6 hours** (batch upload for bandwidth-constrained connections). For most campaign applications with cellular backhaul, transmitting every 10–30 minutes provides a practical balance.
+
+## Data Quality Indicators
+
+NRG Cloud displays two lidar-specific data quality metrics alongside wind measurements. Monitor these indicators to identify operating conditions that may affect measurement accuracy.
+
+### Availability Percentage
+
+Availability is the fraction of one-second samples within an averaging period that the lidar successfully resolves into a wind vector. It is expressed as a percentage (0–100 %) for each height independently.
+
+| Availability | Interpretation |
+|---|---|
+| ≥ 95 % | Excellent — full data quality |
+| 75 % – 94 % | Acceptable — minor atmospheric signal reduction |
+| 50 % – 74 % | Reduced — possible precipitation, fog, or clean air at this height |
+| < 50 % | Poor — averaging period flagged; review conditions |
+
+<Info>
+  IEC 61400-12-1 requires a minimum availability threshold for data to be included in power performance analyses. Consult the standard and your project protocol for the specific threshold applicable to your campaign.
+</Info>
+
+### Carrier-to-Noise Ratio (CNR)
+
+CNR measures the strength of the aerosol backscatter signal relative to detector noise at each scan height, expressed in decibels (dB). A higher CNR indicates more aerosol content in the atmosphere and stronger signal returns.
+
+NRG Cloud automatically applies the ZX 300e manufacturer-specified CNR filter (`CNR > -22 dB` by default) to flag low-quality samples before computing averages. You can adjust this threshold from the **Data Quality** section of the Configuration tab if your project protocol specifies a different value.
+
+<Warning>
+  Loosening the CNR filter threshold (allowing lower values) increases data recovery in clean-air conditions but also admits noisier measurements. Tightening the threshold improves quality but reduces availability. Consult the ZX Technology documentation and your project wind resource analyst before modifying the default CNR filter.
+</Warning>
+
+## Downloading Lidar Data
+
+Export ZX 300e data from NRG Cloud in standard formats for use in wind analysis software.
+
+1. Navigate to **Equipment → [Device Name] → Data Export**.
+2. Select the **Date Range** for the export.
+3. Choose the **Heights** to include — select individual heights or all configured heights.
+4. Select the **Averaging Period** (1-minute or 10-minute, matching what the lidar was configured to record).
+5. Choose an **Export Format**:
+
+| Format | Use Case |
+|---|---|
+| CSV | General-purpose analysis in Excel, Python, R |
+| NRG Cloud Standard (.nrg) | Import into Windographer or other NRG-compatible tools |
+| IEC Data Format | Power performance test reporting per IEC 61400-12-1 |
+
+6. Click **Export**. NRG Cloud prepares the file and sends a download link to your registered email address when ready. Large exports (multiple months, all heights) may take a few minutes to generate.
+
+<Tip>
+  Use the NRG Cloud API to automate recurring data exports from your ZX 300e. This is particularly useful for integrating lidar data into custom analysis pipelines or delivering data automatically to project stakeholders. See the [API Endpoints](/api/endpoints) for endpoint details.
+</Tip>

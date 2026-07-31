@@ -1,0 +1,161 @@
+---
+title: "NRG Cloud Frequently Asked Questions"
+sidebarTitle: "FAQ"
+description: "Answers to the most common questions about NRG Cloud hardware compatibility, data retention, user access, the REST API, file formats, and account security."
+---
+
+Whether you're evaluating NRG Cloud for the first time or looking for a quick answer to a day-to-day question, the answers below cover the topics our users ask about most. If you don't find what you need here, visit [www.nrgsystems.com/support](https://www.nrgsystems.com/support) or email [support@nrgsystems.com](mailto:support@nrgsystems.com) and the NRG Systems team will get back to you promptly.
+
+---
+
+<Accordion title="What hardware is compatible with NRG Cloud?">
+  NRG Cloud natively supports the following devices:
+
+  <CardGroup cols={2}>
+    <Card title="LOGR Met Data Logger" icon="server" href="/equipment/logr-logger">
+      Automatic cellular or satellite transmission with configurable communication schedules.
+    </Card>
+    <Card title="ZX 300e Wind Lidar" icon="wind" href="/equipment/zx300e-lidar">
+      Direct integration for remote wind profiling data delivery.
+    </Card>
+    <Card title="Legacy Symphonie Loggers" icon="database" href="/equipment/supported-hardware">
+      Supported via manual file upload or the **nrgpy** Python library.
+    </Card>
+    <Card title="All Supported Hardware" icon="list" href="/equipment/supported-hardware">
+      View the full list of supported models, firmware versions, and connection methods.
+    </Card>
+  </CardGroup>
+</Accordion>
+
+<Accordion title="How often does data update in NRG Cloud?">
+  For connected devices, data typically appears in NRG Cloud **within minutes** of each transmission. The exact frequency depends on the communication schedule configured for each device.
+
+  - **LOGR Met Data Logger default:** every **10 minutes**
+  - All schedules are configurable — navigate to **Device Settings** in NRG Cloud to adjust the transmission interval for any device
+
+  <Note>
+    Cellular or satellite latency, carrier congestion, or marginal signal strength at the site can occasionally add a few minutes to delivery time. If data consistently arrives later than expected, review the device connectivity settings or check signal conditions at the site.
+  </Note>
+</Accordion>
+
+<Accordion title="How long is my data retained?">
+  NRG Cloud retains your raw measurement data for the **lifetime of your account**. There are no rolling deletion windows or storage caps applied to historical records.
+
+  <Tip>
+    Even though your data is retained indefinitely, NRG Systems recommends periodically exporting and archiving your data to your own storage systems. You can download data in CSV, binary `.rld`, or JSON formats at any time — see *What formats can I download data in?* below for details.
+  </Tip>
+</Accordion>
+
+<Accordion title="Can multiple users access the same account?">
+  Yes. Organization accounts in NRG Cloud support **multiple team members** with individual logins.
+
+  Administrators can manage team access from the **Account Settings** page:
+
+  <Steps>
+    <Step title="Open Account Settings">
+      Click your organization name in the top navigation bar and select **Account Settings**.
+    </Step>
+    <Step title="Navigate to Team Members">
+      Select the **Team Members** tab to see all current users and their permission levels.
+    </Step>
+    <Step title="Invite a new user">
+      Click **Invite User**, enter the team member's email address, and assign an appropriate permission role — **Viewer**, **Editor**, or **Administrator**.
+    </Step>
+    <Step title="Manage or remove users">
+      Click any existing team member's name to edit their role or deactivate their access at any time.
+    </Step>
+  </Steps>
+</Accordion>
+
+<Accordion title="Can I access NRG Cloud programmatically?">
+  Yes. NRG Cloud provides two options for programmatic access:
+
+  <CardGroup cols={2}>
+    <Card title="NRG Cloud REST API" icon="code" href="/api/overview">
+      A full-featured REST API that supports authentication, device queries, and data retrieval in JSON format. API tokens are valid for one hour and must be included as `Authorization: Bearer <token>` in each request.
+    </Card>
+    <Card title="nrgpy Python Library" icon="python" href="/api/nrgpy-python-library">
+      An open-source Python library for reading NRG data files locally and fetching data from NRG Cloud. Ideal for scripted workflows, data pipelines, and integration with analysis tools like pandas.
+    </Card>
+  </CardGroup>
+
+  <Info>
+    The **nrgpy** library is maintained as an open-source project and welcomes community contributions. See the [nrgpy Python Library](/api/nrgpy-python-library) documentation page for installation instructions, usage examples, and a full API reference.
+  </Info>
+</Accordion>
+
+<Accordion title="What formats can I download data in?">
+  NRG Cloud supports several export formats to accommodate different workflows:
+
+  | Format | Description | Best for |
+  |---|---|---|
+  | **CSV** | Comma-separated text file with timestamped rows | Spreadsheet analysis, importing into third-party tools |
+  | **Binary `.rld`** | Original raw logger binary file | Long-term archiving, NRG software processing |
+  | **JSON** (API) | Structured JSON via the REST API | Programmatic access, web application integration |
+  | **Legacy `.rwd`** | Available for older Symphonie logger data | Compatibility with legacy NRG processing software |
+
+  To download data, navigate to the device's **Data** tab in NRG Cloud, select your date range and format, then click **Download**.
+</Accordion>
+
+<Accordion title="How do I reset my password?">
+  <Steps>
+    <Step title="Click 'Forgot password' on the login page">
+      On the NRG Cloud login screen, click the **Forgot password?** link below the sign-in button.
+    </Step>
+    <Step title="Enter your email address">
+      Type the email address associated with your NRG Cloud account and click **Send Reset Link**.
+    </Step>
+    <Step title="Check your inbox">
+      A password reset email will arrive within a few minutes. Check your spam or junk folder if it does not appear in your inbox.
+    </Step>
+    <Step title="Set a new password">
+      Click the link in the email — it is valid for **24 hours** — and enter your new password. You will be signed in automatically after saving.
+    </Step>
+  </Steps>
+
+  <Warning>
+    If you no longer have access to the email address on your account, contact [support@nrgsystems.com](mailto:support@nrgsystems.com) to verify your identity and update your account email.
+  </Warning>
+</Accordion>
+
+<Accordion title="Is my data secure?">
+  Yes. NRG Cloud is built with multiple layers of security to protect your measurement data and account information:
+
+  - **Encrypted transmission:** All data exchanged between devices, browsers, and the NRG Cloud API travels over TLS (Transport Layer Security), preventing interception in transit.
+  - **Auth0-based authentication:** User identity and access control are managed through Auth0, an enterprise-grade identity platform that supports multi-factor authentication (MFA) and industry-standard OAuth 2.0 / OpenID Connect protocols.
+  - **Secure cloud infrastructure:** NRG Cloud is hosted on a managed cloud platform with role-based access controls, encrypted storage at rest, and regular security audits.
+
+  <Info>
+    NRG Systems strongly recommends enabling **multi-factor authentication (MFA)** on your account for an additional layer of protection. You can enable MFA from your **Profile Settings** page.
+  </Info>
+</Accordion>
+
+<Accordion title="What browsers does NRG Cloud support?">
+  NRG Cloud supports the **latest stable versions** of the following browsers:
+
+  | Browser | Platform |
+  |---|---|
+  | Google Chrome | Windows, macOS, Linux |
+  | Mozilla Firefox | Windows, macOS, Linux |
+  | Apple Safari | macOS, iOS |
+  | Microsoft Edge | Windows, macOS |
+
+  For the best experience, keep your browser updated to the current release. NRG Cloud uses modern web APIs that may not function correctly in older browser versions or in Internet Explorer.
+
+  <Tip>
+    If you encounter unexpected display issues or broken functionality, try the page in a different supported browser before contacting support — browser-specific rendering bugs are occasionally responsible.
+  </Tip>
+</Accordion>
+
+<Accordion title="How do I contact NRG Systems support?">
+  The NRG Systems support team is available to help with hardware, software, and NRG Cloud platform questions.
+
+  <CardGroup cols={2}>
+    <Card title="Support Portal" icon="globe" href="https://www.nrgsystems.com/support">
+      Visit **www.nrgsystems.com/support** to browse the knowledge base, submit a support ticket, or access product documentation.
+    </Card>
+    <Card title="Email Support" icon="envelope" href="mailto:support@nrgsystems.com">
+      Send a detailed message to **support@nrgsystems.com**, including your device serial number, site name, and a description of the issue for the fastest response.
+    </Card>
+  </CardGroup>
+</Accordion>

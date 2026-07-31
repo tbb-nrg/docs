@@ -1,0 +1,307 @@
+---
+title: "NRG Cloud Data File Formats: CSV, RLD, RWD, and JSON"
+sidebarTitle: "Data Formats"
+description: "Full reference for NRG Cloud file formats — CSV, RLD, RWD, and JSON — covering column layout, timestamps, and channel naming conventions."
+---
+
+NRG Cloud stores and distributes measurement data in several file formats to accommodate different downstream workflows — from quick inspection in a spreadsheet to automated ingestion in a data pipeline to archival of original binary files for future reprocessing. This reference page describes each format in detail, explains how timestamps and time zones are handled across formats, and documents the channel naming conventions that appear in file headers and API responses. Understanding these conventions will save you time when writing analysis scripts, configuring import tools, or troubleshooting unexpected values.
+
+---
+
+## Text / CSV Format
+
+The CSV format is the most universally compatible export option. NRG Cloud produces a UTF-8 encoded, comma-delimited text file with a metadata header block followed by a single column-header row and one data row per recording interval.
+
+### File Structure
+
+```
+# Site: Ridgeline North
+# Device: LOGR-00412
+# Export Range: 2024-06-01 00:00 – 2024-06-30 23:50 (America/New_York)
+# Interval: 10 minutes
+# Exported: 2024-07-02 09:14 UTC
+Timestamp,WS_80m_Avg,WS_80m_Max,WS_80m_Min,WS_80m_Std,WD_60m_Avg,WD_60m_Std,Temp_2m_Avg,BP_10m_Avg,RH_2m_Avg,GHI_Avg,Flag
+2024-06-01 00:00,6.14,8.92,3.71,1.08,213.4,10.2,14.6,1008.3,62.1,0.0,0
+2024-06-01 00:10,6.57,9.44,4.02,1.22,217.0,9.8,14.5,1008.2,62.4,0.0,0
+2024-06-01 00:20,5.89,8.11,3.44,0.97,210.6,11.3,14.4,1008.4,63.0,0.0,0
+2024-06-01 06:00,7.33,10.50,4.88,1.41,221.3,12.7,16.2,1007.9,58.3,184.7,0
+2024-06-01 06:10,7.81,11.22,5.31,1.55,225.0,11.9,16.5,1007.7,57.8,221.3,0
+2024-06-01 06:20,,,,,,,,,,,, 8
+```
+
+### Column Layout
+
+<ResponseField name="Timestamp" type="string">
+  The end time of the recording interval, formatted as `YYYY-MM-DD HH:MM`. By default this is in the site's configured local time zone. Request a UTC export to receive timestamps in `YYYY-MM-DD HH:MM UTC` format.
+</ResponseField>
+
+<ResponseField name="[Channel]_Avg" type="float">
+  The arithmetic mean of all samples collected within the recording interval for the named channel. Wind direction averages use vector averaging. Empty string when the record is missing.
+</ResponseField>
+
+<ResponseField name="[Channel]_Max" type="float">
+  The maximum instantaneous sample within the recording interval. Provided for wind speed and irradiance channels. Empty string when missing.
+</ResponseField>
+
+<ResponseField name="[Channel]_Min" type="float">
+  The minimum instantaneous sample within the recording interval. Provided for wind speed channels. Empty string when missing.
+</ResponseField>
+
+<ResponseField name="[Channel]_Std" type="float">
+  The standard deviation of samples within the recording interval. Provided for wind speed and wind direction. Empty string when missing.
+</ResponseField>
+
+<ResponseField name="Flag" type="integer">
+  Quality flag for the entire row. See the quality flag table below.
+</ResponseField>
+
+### Quality Flag Values
+
+| Flag | Label | Meaning |
+|------|-------|---------|
+| `0` | Valid | Record passed all range and consistency checks |
+| `1` | Estimated | Value was estimated or interpolated by the logger |
+| `2` | Questionable | Value triggered a secondary quality check (e.g., rate-of-change test) |
+| `4` | Out of Range | Value falls outside configured physical bounds |
+| `8` | Missing | No data recorded for this interval; all value fields are empty |
+
+### Date Format and Time Zone Handling
+
+- All timestamps represent the **end** of the recording interval (for example, a record timestamped `00:10` covers the period `00:00–00:10`).
+- The default export time zone matches the **site's configured local time zone**, including daylight saving adjustments where applicable.
+- To export in UTC, check the **Export in UTC** box in the download form or pass `timezone=UTC` in API requests.
+- The metadata header always states the time zone used, so the file is self-documenting.
+
+<Warning>
+  If you load a CSV into Excel without specifying the time zone, Excel may silently apply your computer's local time zone to datetime cells. Parse the header comment line to confirm the intended time zone before performing any time-based aggregations.
+</Warning>
+
+---
+
+## RLD — Raw Logger Data (Binary)
+
+The RLD format is the proprietary binary file produced natively by the LOGR data logger. NRG Cloud stores the exact binary file as received from the logger and makes it available for download without modification.
+
+### When to Use RLD
+
+- You need the highest-fidelity copy of the original data for regulatory submissions or audit trails.
+- You want to reprocess the data with different averaging or filtering parameters using NRG Convert software.
+- You are ingesting data into a Python-based pipeline using the `nrgpy` library.
+
+### Opening RLD Files
+
+<CardGroup cols={2}>
+  <Card title="NRG Convert Software" icon="desktop">
+    NRG's desktop application for Windows. Import RLD files to convert them to CSV, apply custom sensor calibration coefficients, and configure output column layouts. Download NRG Convert from the NRG Systems support portal.
+  </Card>
+  <Card title="nrgpy Python Library" icon="python">
+    An open-source Python package for reading and processing RLD files programmatically. Install it with `pip install nrgpy` and use the `RldReader` class to load files into pandas DataFrames.
+  </Card>
+</CardGroup>
+
+```python
+import nrgpy
+
+# Read an RLD file into a DataFrame
+reader = nrgpy.RldReader("RidgelineNorth_LOGR-00412_20240601_20240630.rld")
+df = reader.data
+print(df.head())
+```
+
+<Info>
+  RLD files are device-specific. A file produced by a LOGR logger cannot be opened with tools designed for Symphonie RWD files, and vice versa.
+</Info>
+
+---
+
+## RWD — Legacy Symphonie Format
+
+The RWD format is the binary data file produced by NRG's Symphonie and Symphonie Plus data loggers. If your organization has historical campaigns that used Symphonie hardware, those files are stored in NRG Cloud and available for download in the original RWD format.
+
+### When to Use RWD
+
+- You are accessing historical data from a Symphonie-based campaign.
+- You need to re-export data using the original NRG SymphoniePRO Desktop application.
+
+### Opening RWD Files
+
+RWD files can be opened with:
+
+- **SymphoniePRO Desktop** — NRG's desktop application for Symphonie logger data management.
+- **nrgpy** — the `SymphonieReader` class supports RWD files in addition to RLD files.
+
+```python
+import nrgpy
+
+reader = nrgpy.SymphonieReader("HistoricSite_20180101_20181231.rwd")
+df = reader.data
+```
+
+<Note>
+  NRG Cloud supports read-only access for legacy Symphonie devices. Remote configuration and firmware management are not available for this device type.
+</Note>
+
+---
+
+## JSON Format (API)
+
+When you retrieve data through the NRG Cloud REST API, responses are returned as JSON. The structure is consistent across all channel types and includes the same quality flag values used in CSV exports.
+
+### Sample JSON Response
+
+```json
+{
+  "site_id": "site_a1b2c3",
+  "site_name": "Ridgeline North",
+  "device_serial": "LOGR-00412",
+  "interval_minutes": 10,
+  "timezone": "America/New_York",
+  "records": [
+    {
+      "timestamp": "2024-06-01T06:00:00-04:00",
+      "channels": {
+        "WS_80m_Avg": 7.33,
+        "WS_80m_Max": 10.50,
+        "WS_80m_Min": 4.88,
+        "WS_80m_Std": 1.41,
+        "WD_60m_Avg": 221.3,
+        "WD_60m_Std": 12.7,
+        "Temp_2m_Avg": 16.2,
+        "BP_10m_Avg": 1007.9,
+        "RH_2m_Avg": 58.3,
+        "GHI_Avg": 184.7
+      },
+      "flag": 0
+    },
+    {
+      "timestamp": "2024-06-01T06:10:00-04:00",
+      "channels": {
+        "WS_80m_Avg": 7.81,
+        "WS_80m_Max": 11.22,
+        "WS_80m_Min": 5.31,
+        "WS_80m_Std": 1.55,
+        "WD_60m_Avg": 225.0,
+        "WD_60m_Std": 11.9,
+        "Temp_2m_Avg": 16.5,
+        "BP_10m_Avg": 1007.7,
+        "RH_2m_Avg": 57.8,
+        "GHI_Avg": 221.3
+      },
+      "flag": 0
+    }
+  ]
+}
+```
+
+### JSON Field Reference
+
+<ResponseField name="site_id" type="string">
+  The unique identifier for the site, assigned by NRG Cloud at site creation.
+</ResponseField>
+
+<ResponseField name="site_name" type="string">
+  The human-readable site name as configured in NRG Cloud.
+</ResponseField>
+
+<ResponseField name="device_serial" type="string">
+  The serial number of the device that produced the data.
+</ResponseField>
+
+<ResponseField name="interval_minutes" type="integer">
+  The recording interval in minutes (typically `10`).
+</ResponseField>
+
+<ResponseField name="timezone" type="string">
+  The IANA time zone identifier used for timestamps in this response (for example, `America/New_York`). Pass `timezone=UTC` as a query parameter to receive ISO 8601 UTC timestamps instead.
+</ResponseField>
+
+<ResponseField name="records" type="array">
+  An array of record objects, one per recording interval, sorted in ascending chronological order.
+</ResponseField>
+
+<ResponseField name="records[].timestamp" type="string">
+  ISO 8601 datetime string for the end of the recording interval, including UTC offset.
+</ResponseField>
+
+<ResponseField name="records[].channels" type="object">
+  Key-value pairs where each key is a channel name (see naming conventions below) and each value is the numeric measurement. Missing values are represented as `null`.
+</ResponseField>
+
+<ResponseField name="records[].flag" type="integer">
+  Quality flag integer using the same values as the CSV format (0 = Valid, 8 = Missing, etc.).
+</ResponseField>
+
+---
+
+## Timestamps and Time Zone Conventions
+
+NRG Cloud follows these conventions consistently across all formats and interfaces:
+
+| Convention | Details |
+|------------|---------|
+| Data storage | All data is stored in UTC |
+| CSV default | Site local time zone (stated in the file header) |
+| JSON default | Site local time zone with UTC offset included in ISO 8601 string |
+| UTC override | Available in all export formats; use `timezone=UTC` in API calls or the **Export in UTC** checkbox in the UI |
+| Interval convention | Timestamps represent the **end** of the recording interval |
+| Daylight saving | Applied automatically for time zones that observe DST; the UTC offset in JSON responses reflects the correct offset for each individual timestamp |
+
+<Tip>
+  When writing analysis scripts that span daylight saving transitions, always parse timestamps using a timezone-aware datetime library (for example, Python's `dateutil` or `pandas` with `utc=True`) to avoid one-hour offset errors near transition boundaries.
+</Tip>
+
+---
+
+## Data Channel Naming Conventions
+
+NRG Cloud uses a structured naming scheme for all channel identifiers. The pattern is:
+
+```
+{Measurement}_{Height}{Unit}_{Statistic}
+```
+
+Where:
+- `{Measurement}` is a two-to-four letter abbreviation for the measured quantity.
+- `{Height}` is the sensor height above ground in meters, followed by `m`.
+- `{Statistic}` is the aggregation applied over the recording interval.
+
+### Measurement Abbreviations
+
+| Abbreviation | Quantity | Typical Units |
+|---|---|---|
+| `WS` | Wind Speed | m/s |
+| `WD` | Wind Direction | degrees (°) |
+| `Temp` | Air Temperature | °C |
+| `BP` | Barometric Pressure | hPa |
+| `RH` | Relative Humidity | % |
+| `GHI` | Global Horizontal Irradiance | W/m² |
+| `DNI` | Direct Normal Irradiance | W/m² |
+| `DHI` | Diffuse Horizontal Irradiance | W/m² |
+| `Voltage` | Battery / Supply Voltage | V |
+
+### Statistic Suffixes
+
+| Suffix | Meaning |
+|--------|---------|
+| `_Avg` | Mean over the recording interval |
+| `_Max` | Maximum sample within the interval |
+| `_Min` | Minimum sample within the interval |
+| `_Std` | Standard deviation of samples within the interval |
+| `_Tot` | Total (sum) over the interval — used for precipitation and energy |
+
+### Examples
+
+| Channel Name | Description |
+|---|---|
+| `WS_80m_Avg` | 10-minute average wind speed at 80 m |
+| `WS_80m_Max` | 10-minute maximum wind speed at 80 m |
+| `WD_60m_Avg` | Vector-averaged wind direction at 60 m |
+| `WD_60m_Std` | Standard deviation of wind direction at 60 m |
+| `Temp_2m_Avg` | Average air temperature at 2 m |
+| `BP_10m_Avg` | Average barometric pressure at 10 m |
+| `RH_2m_Avg` | Average relative humidity at 2 m |
+| `GHI_Avg` | Average global horizontal irradiance (height not applicable) |
+
+<Info>
+  For ZX 300e Lidar deployments, channel names follow the same convention but heights correspond to the configured measurement gates (for example, `WS_100m_Avg`, `WS_120m_Avg`, `WS_140m_Avg`). The exact set of heights depends on the lidar's configuration profile.
+</Info>

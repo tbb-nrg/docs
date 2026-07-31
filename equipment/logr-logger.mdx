@@ -1,0 +1,162 @@
+---
+title: 'LOGR Met Data Logger: Setup and Configuration Guide'
+sidebarTitle: 'LOGR Logger'
+description: 'Register your LOGR Met Data Logger with NRG Cloud, configure sensors and communication settings, push firmware updates, and view live diagnostics remotely.'
+---
+
+The LOGR Met Data Logger is NRG Systems' next-generation instrument for wind and solar resource measurement campaigns. Engineered for the demands of long-term unattended deployment, LOGR combines high-frequency sensor sampling with encrypted data transmission and full remote configurability through NRG Cloud. Whether you are outfitting a tall met mast with a full suite of anemometers and wind vanes or building a compact solar irradiance station, LOGR handles the acquisition side while NRG Cloud handles everything else — data storage, remote management, diagnostics, and reporting — without requiring a site visit.
+
+## Key Capabilities
+
+<CardGroup cols={2}>
+  <Card title="High-Frequency Sampling" icon="chart-line">
+    LOGR samples connected sensors at up to 1 Hz and computes configurable statistics (mean, standard deviation, minimum, maximum, gust) over user-defined averaging intervals, typically 10 minutes.
+  </Card>
+  <Card title="Encrypted Transmission" icon="shield-check">
+    All data leaving LOGR is encrypted in transit using TLS 1.2 or higher, ensuring that your campaign measurements are protected from interception over cellular or satellite links.
+  </Card>
+  <Card title="Remote Configuration" icon="sliders">
+    Modify sensor channel assignments, scaling factors, offsets, and communication schedules directly from NRG Cloud without sending a technician to the site.
+  </Card>
+  <Card title="Cellular & Satellite" icon="satellite">
+    LOGR operates over LTE/3G cellular networks or the Iridium satellite constellation, giving you connectivity options for virtually any deployment location.
+  </Card>
+</CardGroup>
+
+## Registering LOGR with NRG Cloud
+
+Before LOGR can push data to your account, you must register the device using its factory-assigned serial number. Complete the following steps after physically installing and powering the logger at your site.
+
+<Steps>
+  <Step title="Locate the Serial Number">
+    Find the LOGR serial number on the label affixed to the inside of the logger enclosure door, or on the product packaging. The serial number follows the format `LGR-XXXXXXXX` (eight alphanumeric characters after the prefix).
+  </Step>
+  <Step title="Open Equipment Registration">
+    In NRG Cloud, navigate to **Equipment** in the left sidebar, then click **Add Device** in the upper-right corner of the Equipment dashboard.
+  </Step>
+  <Step title="Select Device Type">
+    From the device type dropdown, select **LOGR Met Data Logger**. The registration form updates to show LOGR-specific fields.
+  </Step>
+  <Step title="Enter the Serial Number">
+    Type or paste the serial number into the **Serial Number** field. NRG Cloud validates the format in real time — a green checkmark confirms the value is correctly formatted before you proceed.
+  </Step>
+  <Step title="Name Your Device">
+    Enter a descriptive **Device Name** (for example, `Ridgeline Site A - LOGR`) and optionally assign the device to an existing **Project**. A clear naming convention makes it easier to manage large fleets.
+  </Step>
+  <Step title="Save and Await First Check-In">
+    Click **Register Device**. NRG Cloud creates the device record and displays it in the Equipment list with a **Pending** status badge. Once LOGR establishes its first connection — typically within minutes for cellular or within the next scheduled satellite window — the status badge changes to **Online**.
+  </Step>
+  <Step title="Verify Connectivity">
+    Click the device name to open its detail page. Confirm that the **Last Check-In** timestamp is recent and that the **Signal Strength** indicator shows an acceptable value for your communication mode. If the device remains **Pending** after 30 minutes on cellular, review the SIM card activation and antenna connection at the site.
+  </Step>
+</Steps>
+
+<Note>
+  Each LOGR serial number can only be registered to one NRG Cloud account at a time. If you need to transfer a device to a different account, contact NRG Systems support to initiate a transfer request.
+</Note>
+
+## Sensor Configuration
+
+After registration, configure LOGR's input channels to match the sensors physically wired to the logger at your site. NRG Cloud stores your channel configuration and pushes it to the device automatically at its next check-in.
+
+### Adding a Sensor Channel
+
+1. Open the device detail page and click the **Configuration** tab.
+2. Under **Sensor Channels**, click **Add Channel**.
+3. Select the **Channel Number** (1–16) that matches the terminal on the LOGR wiring diagram.
+4. Choose the **Sensor Type** from the dropdown. Supported types include:
+
+| Sensor Type | Examples |
+|---|---|
+| Anemometer | NRG #40C, NRG IceFree III |
+| Wind Vane | NRG #200P, NRG 200M |
+| Temperature | NRG T60 |
+| Pyranometer | Kipp & Zonen CMP series |
+| Barometric Pressure | Vaisala PTB210 |
+| Custom Analog (0–2.5 V) | Any linear voltage output sensor |
+
+5. Enter the sensor **Height (m)** above ground level.
+6. Enter the manufacturer-supplied **Scaling Factor** and **Offset** values. These convert the raw electrical signal to engineering units.
+7. Click **Save Channel**.
+
+### Scaling and Offset Reference
+
+LOGR applies the following linear conversion to each channel:
+
+```text
+Engineering Value = (Raw Signal × Scaling Factor) + Offset
+```
+
+Always source scaling factor and offset values from the sensor's individual calibration certificate, not the generic datasheet, to maximize accuracy.
+
+<Warning>
+  Entering an incorrect scaling factor or offset results in systematically biased data. Double-check your values against the physical calibration certificate for each sensor before pushing the configuration to the device.
+</Warning>
+
+### Setting Measurement Heights
+
+Accurate height metadata is critical for wind shear analysis and IEC-compliant reporting. Enter heights as the distance from the base of the met mast to the center of the sensor mounting bracket, measured along the tower axis — not slant distance.
+
+<Tip>
+  Use consistent height rounding (for example, 40.0 m rather than 39.8 m) only if the actual mounting height matches. Otherwise, enter the measured value precisely. NRG Cloud uses height metadata when computing wind shear exponents and extrapolating hub-height wind speeds.
+</Tip>
+
+## Communication Settings
+
+LOGR's communication mode determines how and how often it delivers data to NRG Cloud. Configure these settings from the **Communication** section of the Configuration tab.
+
+### Cellular Mode
+
+| Setting | Description | Recommended Value |
+|---|---|---|
+| Transmission Interval | How often LOGR pushes data | 10–60 minutes |
+| Retry Attempts | Number of retries on failed send | 3 |
+| APN | SIM card Access Point Name | Supplied by SIM provider |
+
+<Info>
+  For most cellular SIM cards pre-provisioned by NRG Systems, the APN is pre-configured at the factory. Only change this value if you are using a third-party SIM card.
+</Info>
+
+### Satellite Mode
+
+| Setting | Description | Recommended Value |
+|---|---|---|
+| Transmission Schedule | Time-of-day windows for Iridium SBD | 2–4 windows per day |
+| Message Size Limit | Max bytes per SBD message | 340 bytes (Iridium maximum) |
+| Data Compression | Enable lossless compression | Enabled |
+
+<Warning>
+  Iridium SBD airtime is billed per message. Setting very frequent transmission windows significantly increases your monthly airtime costs. Consult your NRG Systems account representative to design a schedule that balances data latency with cost.
+</Warning>
+
+## Firmware Updates
+
+NRG Systems periodically releases LOGR firmware updates that add features, improve sensor compatibility, and resolve issues. NRG Cloud notifies you when a new firmware version is available for a registered device.
+
+To push a firmware update:
+
+1. Navigate to the device detail page and open the **Firmware** tab.
+2. Review the **Release Notes** for the available update.
+3. Click **Schedule Update**.
+4. Choose whether to apply the update **At Next Check-In** or at a **Scheduled Time** (useful for applying updates during low-wind periods that minimize data loss risk).
+5. Click **Confirm**. NRG Cloud queues the update package and delivers it to LOGR at the next connection.
+
+<Note>
+  LOGR performs a configuration backup automatically before applying any firmware update. If the update fails, the device rolls back to the previous firmware version and reports the failure in the **Event Log**.
+</Note>
+
+## Viewing Live Diagnostic Data
+
+The **Diagnostics** tab on the device detail page gives you a real-time view of LOGR's operating health without visiting the site.
+
+Key diagnostic indicators include:
+
+- **Battery Voltage** — Main and backup battery levels; alert thresholds are configurable
+- **Panel Voltage** — Solar panel output (if equipped), useful for detecting shading or soiling
+- **Internal Temperature** — Logger enclosure temperature; flags potential thermal issues
+- **Signal Strength** — Cellular RSSI or satellite link quality score
+- **Channel Status** — Per-channel indication of whether each sensor is returning values within its expected range
+
+<Tip>
+  Set up **Alert Rules** on battery voltage and signal strength to receive an email or SMS notification before a communication failure occurs. Navigate to **Alerts** in the left sidebar to configure notification thresholds for your LOGR devices.
+</Tip>

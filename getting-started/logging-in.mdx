@@ -1,0 +1,101 @@
+---
+title: "NRG Cloud Sign-In: Login, MFA, and Password Recovery"
+sidebarTitle: "Logging In"
+description: "Sign in to NRG Cloud, complete multi-factor authentication, manage your session, and recover access if you forget your password or get locked out."
+---
+
+Signing in to NRG Cloud takes only a few seconds once your account is verified. This page covers the standard login flow, multi-factor authentication (MFA), session behaviour, and the steps to take if you ever lose access to your account.
+
+## Log In to Your Account
+
+<Steps>
+  <Step title="Navigate to NRG Cloud">
+    Open your browser and go to [cloud.nrgsystems.com](https://cloud.nrgsystems.com). Bookmark this address so you always land on the correct page.
+
+    <Tip>
+      NRG Cloud is fully browser-based — no software installation is required. Use the latest version of Chrome, Firefox, Edge, or Safari for the best experience.
+    </Tip>
+  </Step>
+  <Step title="Enter Your Credentials">
+    Type your registered **email address** and **password** into the login form, then click **Sign In**.
+
+    <Warning>
+      Passwords are case-sensitive. Make sure Caps Lock is not active before submitting your credentials.
+    </Warning>
+  </Step>
+  <Step title="Complete Multi-Factor Authentication (If Enabled)">
+    If you or your organization administrator has enabled MFA on your account, NRG Cloud will prompt you for a second verification step after your password is accepted.
+
+    - **Authenticator app:** Open your authenticator app (such as Google Authenticator, Authy, or Microsoft Authenticator) and enter the current 6-digit code.
+    - **Email OTP:** Check your inbox for a one-time passcode and enter it on the verification screen.
+
+    <Note>
+      One-time codes expire within 30 seconds (TOTP) or 10 minutes (email OTP). If your code is rejected, wait for a new one to generate before trying again.
+    </Note>
+  </Step>
+  <Step title="Access the Dashboard">
+    After successful authentication, NRG Cloud redirects you to the main dashboard where your sites, devices, and recent activity are displayed.
+  </Step>
+</Steps>
+
+## Stay Signed In and Session Management
+
+NRG Cloud manages sessions securely so your account stays protected whether you step away or switch devices.
+
+- **Session duration:** Your session remains active for up to **8 hours** of use. After that, you are automatically signed out to protect your account.
+- **Inactivity timeout:** If your browser is idle for more than **60 minutes**, NRG Cloud will sign you out and prompt you to log in again when you return.
+- **Remember this device:** On the login screen you can check **Stay signed in** to extend your session on trusted devices. Do not use this option on shared or public computers.
+- **Sign out manually:** Click your avatar or initials in the top-right corner of the dashboard, then select **Sign Out** to end your session immediately.
+
+<Warning>
+  Always sign out manually when using a shared or public computer. Closing the browser tab does not terminate your session.
+</Warning>
+
+## Reset a Forgotten Password
+
+If you cannot remember your password, use the self-service reset flow to regain access without contacting support.
+
+<Steps>
+  <Step title="Click 'Forgot Password'">
+    On the [cloud.nrgsystems.com](https://cloud.nrgsystems.com) login page, click the **Forgot password?** link below the password field.
+  </Step>
+  <Step title="Enter Your Email Address">
+    Type the email address associated with your NRG Cloud account and click **Send Reset Link**. You will see a confirmation message regardless of whether the address is recognised — this prevents account enumeration.
+  </Step>
+  <Step title="Open the Reset Email">
+    Check your inbox (and spam folder) for an email from NRG Cloud. Click the **Reset Password** button inside the email.
+
+    <Note>
+      The reset link is valid for **1 hour**. If it expires, return to the login page and request a new one.
+    </Note>
+  </Step>
+  <Step title="Set a New Password">
+    Enter and confirm your new password on the reset page. It must meet the same requirements as your original password (at least 8 characters, one uppercase letter, one number or special character). Click **Save Password**.
+  </Step>
+  <Step title="Sign In With Your New Password">
+    Return to [cloud.nrgsystems.com](https://cloud.nrgsystems.com) and log in using your email and the new password you just created.
+  </Step>
+</Steps>
+
+## Troubleshoot Login Issues
+
+If you encounter problems signing in, work through the checks below before contacting support.
+
+<CardGroup cols={2}>
+  <Card title="Incorrect Credentials" icon="key">
+    Double-check that you're using the email address you registered with and that Caps Lock is off. Passwords are case-sensitive. After 5 failed attempts your account will be temporarily locked.
+  </Card>
+  <Card title="Account Locked" icon="lock">
+    After too many failed login attempts, NRG Cloud locks your account for 15 minutes as a security measure. Wait and try again, or use the **Forgot password?** flow to reset your credentials immediately.
+  </Card>
+  <Card title="Email Not Verified" icon="envelope">
+    If you see a "please verify your email" message, check your inbox for the original verification email. Click the link inside it, then try logging in again. Request a new verification email from the login page if the original has expired.
+  </Card>
+  <Card title="Browser or Cookie Issues" icon="globe">
+    Clear your browser cache and cookies, then reload [cloud.nrgsystems.com](https://cloud.nrgsystems.com). If the issue persists, try an incognito/private window or a different browser to rule out a local browser extension conflict.
+  </Card>
+</CardGroup>
+
+<Info>
+  If none of the steps above resolve your login issue, contact NRG Systems support at [nrgsystems.com/support](https://www.nrgsystems.com/support) and include your registered email address so the team can locate your account quickly.
+</Info>

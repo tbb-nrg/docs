@@ -1,0 +1,82 @@
+{
+  "projectType": "saas",
+  "projectName": "NRG Cloud",
+  "projectDescription": "NRG Cloud is a web-based data management platform that lets wind and solar resource assessment professionals remotely access measurement data, configure NRG hardware equipment, and troubleshoot issues from anywhere.",
+  "theme": "almond",
+  "primaryColor": "#fcdc04",
+  "lightColor": "#fcdc04",
+  "darkColor": "#c9a800",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "getting-started/account-setup",
+              "getting-started/logging-in",
+              "getting-started/dashboard-overview"
+            ]
+          },
+          {
+            "group": "Data Management",
+            "pages": [
+              "data/sites-and-devices",
+              "data/viewing-data",
+              "data/downloading-data",
+              "data/data-formats"
+            ]
+          },
+          {
+            "group": "Equipment & Configuration",
+            "pages": [
+              "equipment/supported-hardware",
+              "equipment/logr-logger",
+              "equipment/zx300e-lidar",
+              "equipment/remote-configuration"
+            ]
+          },
+          {
+            "group": "API Access",
+            "pages": [
+              "api/overview",
+              "api/authentication",
+              "api/endpoints",
+              "api/nrgpy-python-library"
+            ]
+          },
+          {
+            "group": "Support",
+            "pages": [
+              "support/troubleshooting",
+              "support/faq"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Remote access to wind and solar measurement data from anywhere",
+    "Equipment configuration and management for NRG loggers and sensors",
+    "Secure cloud storage with Auth0 authentication",
+    "RESTful API for programmatic data access",
+    "Support for LOGR Met Data Logger and ZX 300e Wind Lidar",
+    "Data export in multiple formats (CSV, JSON)",
+    "Real-time troubleshooting and diagnostic tools",
+    "Unified ecosystem integrating NRG hardware and software"
+  ],
+  "publicApiSurface": [
+    "GET /sites — list measurement sites",
+    "GET /sites/{siteId}/data — retrieve time-series sensor data",
+    "GET /sites/{siteId}/devices — list devices at a site",
+    "GET /files — list available data files",
+    "POST /files/convert — convert raw logger files",
+    "GET /files/{fileId}/download — download a data file",
+    "POST /auth/token — obtain API access token",
+    "nrgpy.cloud_api — Python library for NRG Cloud API",
+    "nrgpy.symphonie_export — read Symphonie exported text files"
+  ]
+}

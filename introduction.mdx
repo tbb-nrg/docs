@@ -1,0 +1,85 @@
+---
+title: "NRG Cloud: Wind and Solar Resource Data Management Platform"
+sidebarTitle: "Introduction"
+description: "NRG Cloud gives wind and solar assessment teams remote access to measurement data, device configuration, and a REST API from one web platform."
+---
+
+NRG Cloud is a web-based data management platform built for wind and solar resource assessment professionals. Whether you're monitoring a fleet of LOGR loggers in the field, configuring a ZX 300e Lidar remotely, or pulling measurements into your own analysis pipeline through the REST API, NRG Cloud puts everything you need in one place — accessible from any modern browser, anywhere in the world.
+
+## Explore the Documentation
+
+<CardGroup cols={2}>
+  <Card
+    title="Account Setup"
+    icon="user-plus"
+    href="getting-started/account-setup"
+  >
+    Create your NRG Cloud account, verify your email, set up your profile, and invite your team.
+  </Card>
+  <Card
+    title="Dashboard"
+    icon="gauge"
+    href="getting-started/dashboard-overview"
+  >
+    Learn how to navigate the dashboard, switch between sites, and find the tools you use most.
+  </Card>
+  <Card
+    title="Sites & Devices"
+    icon="map-pin"
+    href="data/sites-and-devices"
+  >
+    Add measurement sites, pair NRG hardware, and manage your device inventory from one screen.
+  </Card>
+  <Card
+    title="API Access"
+    icon="code"
+    href="api/overview"
+  >
+    Retrieve data programmatically using the NRG Cloud REST API or the nrgpy Python library.
+  </Card>
+  <Card
+    title="Hardware"
+    icon="server"
+    href="equipment/supported-hardware"
+  >
+    Review supported hardware, firmware requirements, and remote configuration options.
+  </Card>
+  <Card
+    title="FAQ"
+    icon="circle-question"
+    href="support/faq"
+  >
+    Find answers to the most common questions about accounts, data access, and device setup.
+  </Card>
+</CardGroup>
+
+## Get Up and Running in Four Steps
+
+Follow this onboarding path to go from a new account to live data in your hands as quickly as possible.
+
+<Steps>
+  <Step title="Create Your Account">
+    Go to [cloud.nrgsystems.com](https://cloud.nrgsystems.com) and register for a new account, or ask your organization administrator to send you an invitation. After you sign up, check your inbox for a verification email and confirm your address before logging in.
+
+    <Tip>
+      Enterprise teams can contact [NRG Systems](https://www.nrgsystems.com) to set up an organization account with shared access controls and team management.
+    </Tip>
+  </Step>
+  <Step title="Add Your Site and Device">
+    After logging in, use the **Sites & Devices** section to create a measurement site and pair it with your NRG hardware — a LOGR data logger, ZX 300e Lidar, or other supported device. Enter your site's name, coordinates, and time zone so that all incoming data is correctly stamped and organized.
+  </Step>
+  <Step title="View and Download Your Data">
+    Once your device is connected and transmitting, navigate to the **Data** section to view real-time and historical measurements, inspect data quality flags, and download files in your preferred format. You can filter by date range, sensor channel, or site to focus on exactly what you need.
+  </Step>
+  <Step title="Integrate via API or nrgpy">
+    Use the NRG Cloud REST API or the open-source **nrgpy** Python library to pull data directly into your own workflows, dashboards, or analysis scripts. Visit the [API overview](api/overview) to generate your API key and review the available endpoints.
+
+    ```bash
+    pip install nrgpy
+    ```
+  </Step>
+</Steps>
+
+<Info>
+  NRG Cloud is continuously updated. Visit [NRG Systems Support](https://www.nrgsystems.com/support) for the latest product updates and release notes.
+</Info>

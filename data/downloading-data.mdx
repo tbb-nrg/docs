@@ -1,0 +1,178 @@
+---
+title: "Download and Export Measurement Data from NRG Cloud"
+sidebarTitle: "Downloading Data"
+description: "Export wind and solar measurement data as CSV or RLD files, schedule automated exports, and understand file naming conventions and CSV column structure."
+---
+
+NRG Cloud lets you export your measurement data in multiple formats so you can use it in your preferred analysis tools, archive it for long-term storage, or share it with clients and colleagues. You can download data for a single site and date range on demand, queue bulk downloads across multiple sites, or schedule recurring exports that run automatically and notify you when new files are ready. This page walks you through each of these workflows and explains what to expect in the files you receive.
+
+---
+
+## Downloading Data for a Site
+
+<Steps>
+  <Step title="Navigate to the site">
+    In the left navigation panel, click **Sites**, then click the name of the site whose data you want to download to open its detail page.
+  </Step>
+  <Step title="Open the Download panel">
+    Click the **Download** tab at the top of the site detail page. The download form opens on the right side of the screen.
+  </Step>
+  <Step title="Select the date range">
+    Enter a **Start Date** and **End Date** for the data you want to export. Dates use the local time zone configured for the site. The maximum single-request range is 366 days — for longer periods, use the bulk download option described below.
+
+    <Tip>
+      If you need data up to the present moment, leave the **End Date** field blank. NRG Cloud automatically uses the timestamp of the most recently received record.
+    </Tip>
+  </Step>
+  <Step title="Choose the export format">
+    Select the file format from the **Format** dropdown:
+
+    - **CSV (Text)** — a human-readable, comma-separated text file suitable for Excel, Python, R, and most analysis software.
+    - **RLD (Raw Logger Data)** — the original binary file exactly as received from the LOGR logger, for use with NRG Convert software or the `nrgpy` Python library.
+
+    See [Data Formats](/data/data-formats) for a full description of each format.
+  </Step>
+  <Step title="Select channels (CSV only)">
+    When exporting as CSV, you can optionally expand the **Channels** section and choose specific channels to include. By default, all channels are included. Deselect any channels you do not need to reduce file size.
+  </Step>
+  <Step title="Initiate the download">
+    Click **Download**. NRG Cloud prepares the file and your browser begins downloading it automatically. For large date ranges, a progress indicator appears while the file is being generated — this usually completes within a few seconds to a minute depending on the volume of data.
+  </Step>
+</Steps>
+
+---
+
+## Bulk Download
+
+If you need to download data for multiple sites at once, or for a single site over a period longer than 366 days, use the **Bulk Download** feature.
+
+1. In the left navigation panel, click **Downloads** to open the Bulk Download page.
+2. Click **+ New Bulk Download**.
+3. Select one or more sites using the site checkboxes or the **Select All** button.
+4. Enter the date range and choose the export format.
+5. Click **Queue Download**. NRG Cloud begins processing the download in the background.
+
+When the files are ready, NRG Cloud sends you an email notification with a download link. Bulk download packages are also listed on the **Downloads** page for 30 days, after which they are automatically deleted from temporary storage.
+
+<Note>
+  Bulk download packages are delivered as a `.zip` archive containing one file per site per format selected. File naming conventions within the archive follow the same pattern as single-site downloads.
+</Note>
+
+---
+
+## Scheduling Automated Data Exports
+
+NRG Cloud can automatically generate and deliver data files on a recurring schedule, eliminating the need to return to the platform each time you need fresh data.
+
+<Steps>
+  <Step title="Open Scheduled Exports">
+    In the left navigation panel, click **Settings**, then click **Scheduled Exports**.
+  </Step>
+  <Step title="Create a new schedule">
+    Click **+ New Schedule**. Select the site or sites to include, the export format, and the delivery frequency — **Daily**, **Weekly**, or **Monthly**.
+  </Step>
+  <Step title="Configure delivery">
+    Choose a delivery method:
+    - **Email** — NRG Cloud sends an email with the file attached or a download link when the file size exceeds the attachment limit.
+    - **SFTP** — NRG Cloud pushes files directly to an SFTP server you specify. Enter the host, port, path, username, and password or SSH key.
+  </Step>
+  <Step title="Set the data window">
+    Specify the rolling **Data Window** — for example, **Last 24 hours** for a daily schedule or **Last 7 days** for a weekly schedule. NRG Cloud uses the scheduled run time and this window to determine the start and end of each export.
+  </Step>
+  <Step title="Save and activate">
+    Click **Save Schedule**. The schedule becomes active immediately. You can pause, edit, or delete it from the **Scheduled Exports** list at any time.
+  </Step>
+</Steps>
+
+---
+
+## File Naming Conventions
+
+NRG Cloud uses the following naming pattern for all downloaded files:
+
+```
+{SiteName}_{SerialNumber}_{StartDate}_{EndDate}.{extension}
+```
+
+For example:
+
+```
+RidgelineNorth_LOGR-00412_20240101_20240131.csv
+RidgelineNorth_LOGR-00412_20240101_20240131.rld
+```
+
+Where:
+- `{SiteName}` is the site name with spaces replaced by underscores and special characters removed.
+- `{SerialNumber}` is the device serial number.
+- `{StartDate}` and `{EndDate}` are formatted as `YYYYMMDD`.
+- The extension is `.csv`, `.rld`, or `.zip` for bulk packages.
+
+<Info>
+  If a bulk download includes multiple devices from the same site, each device produces a separate file within the zip archive, distinguished by serial number.
+</Info>
+
+---
+
+## What to Expect in a Downloaded CSV
+
+A CSV export from NRG Cloud contains a short header block followed by one row of data per recording interval. The structure is as follows:
+
+**Header rows** (lines beginning with `#`): site name, device serial number, export date range, time zone, and firmware version.
+
+**Column header row**: the first non-comment row lists column names.
+
+**Data rows**: one row per recording interval, in chronological order.
+
+### Sample CSV
+
+```csv
+# Site: Ridgeline North
+# Device: LOGR-00412
+# Export Range: 2024-01-15 00:00 – 2024-01-15 01:00 (America/New_York)
+# Exported: 2024-03-10 14:22 UTC
+Timestamp,WS_80m_Avg,WS_80m_Max,WS_80m_Min,WS_80m_Std,WD_60m_Avg,WD_60m_Std,Temp_2m_Avg,BP_10m_Avg,RH_2m_Avg,Flag
+2024-01-15 00:00,8.42,11.30,5.17,1.23,247.3,12.4,-3.1,1011.2,78.4,0
+2024-01-15 00:10,8.87,12.44,5.62,1.45,251.0,10.8,-3.2,1011.1,78.1,0
+2024-01-15 00:20,7.95,10.88,4.93,1.18,249.6,11.2,-3.3,1011.3,78.6,0
+2024-01-15 00:30,9.11,13.02,6.04,1.67,253.4,13.1,-3.4,1011.0,79.0,0
+2024-01-15 00:40,6.23,9.15,3.88,1.02,245.8,9.7,-3.5,1011.4,79.3,2
+2024-01-15 00:50,,,,,,,,,, 8
+```
+
+**Column descriptions:**
+
+<ResponseField name="Timestamp" type="string">
+  Recording interval end time in `YYYY-MM-DD HH:MM` format, in the site's configured local time zone (unless UTC export is requested).
+</ResponseField>
+
+<ResponseField name="WS_80m_Avg" type="float">
+  10-minute average wind speed at 80 m height, in meters per second (m/s).
+</ResponseField>
+
+<ResponseField name="WS_80m_Max / Min / Std" type="float">
+  10-minute maximum, minimum, and standard deviation of wind speed at 80 m, in m/s.
+</ResponseField>
+
+<ResponseField name="WD_60m_Avg" type="float">
+  Vector-averaged wind direction at 60 m, in degrees (0–360).
+</ResponseField>
+
+<ResponseField name="Temp_2m_Avg" type="float">
+  Average air temperature at 2 m, in degrees Celsius (°C).
+</ResponseField>
+
+<ResponseField name="BP_10m_Avg" type="float">
+  Average barometric pressure at 10 m, in hectopascals (hPa).
+</ResponseField>
+
+<ResponseField name="RH_2m_Avg" type="float">
+  Average relative humidity at 2 m, as a percentage (%).
+</ResponseField>
+
+<ResponseField name="Flag" type="integer">
+  Data quality flag for the row. `0` = Valid, `2` = Questionable, `8` = Missing. See [Data Formats](/data/data-formats) for a full flag reference.
+</ResponseField>
+
+<Warning>
+  Rows with a **Flag** value of `8` (Missing) contain empty fields for all measurement channels. Ensure your analysis scripts handle blank cells in these rows to avoid parsing errors.
+</Warning>

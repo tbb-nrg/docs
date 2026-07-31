@@ -1,0 +1,135 @@
+---
+title: 'How to Remotely Configure NRG Devices in NRG Cloud'
+sidebarTitle: 'Remote Configuration'
+description: 'Change sensor settings, communication schedules, and alert thresholds on deployed NRG devices from NRG Cloud without dispatching a technician to the field.'
+---
+
+Remote configuration is one of the most operationally valuable capabilities in NRG Cloud. Instead of scheduling a site visit every time you need to adjust a sensor channel, update a transmission interval, or activate maintenance mode, you make the change from your browser and NRG Cloud delivers it to the device at its next check-in. This eliminates travel costs, reduces campaign downtime, and lets you respond quickly to data quality issues discovered in post-processing — regardless of whether your site is a rooftop in New England or a remote ridgeline with no road access for half the year.
+
+## What You Can Configure Remotely
+
+NRG Cloud supports remote modification of the following configuration categories for compatible devices (LOGR Met Data Logger and ZX 300e Wind Lidar):
+
+<CardGroup cols={2}>
+  <Card title="Sensor Channel Settings" icon="plug">
+    Update sensor type assignments, measurement heights, scaling factors, and offset values for any channel on a LOGR logger. Changes take effect at the next data transmission after the device receives the updated configuration.
+  </Card>
+  <Card title="Sampling & Averaging Rates" icon="stopwatch">
+    Adjust the raw sampling frequency and the statistics averaging interval (for example, switch from 10-minute to 1-minute averages during a short-term intensive observation period).
+  </Card>
+  <Card title="Communication Schedule" icon="calendar">
+    Change how frequently a device transmits data to NRG Cloud, set satellite transmission windows, or temporarily suspend transmissions during a maintenance window.
+  </Card>
+  <Card title="Maintenance Mode" icon="wrench">
+    Place a device in maintenance mode to suppress alerts and exclude data collected during calibration checks or sensor swaps from the primary campaign dataset.
+  </Card>
+</CardGroup>
+
+<Info>
+  Remote configuration is available for all LOGR Met Data Loggers and ZX 300e Wind Lidars registered in NRG Cloud. Legacy Symphonie loggers connected via file upload or nrgpy do not support remote configuration — changes to those devices must be made on-site using the Symphonie software suite.
+</Info>
+
+## Pushing a Configuration Change
+
+The following steps walk you through making and sending a configuration change to a deployed device.
+
+<Steps>
+  <Step title="Open the Device Detail Page">
+    In NRG Cloud, navigate to **Equipment** in the left sidebar. Locate the target device in the list and click its name to open the device detail page. Confirm that the device shows an **Online** or **Delayed** status badge — you can queue a configuration push for **Offline** devices, but the change will not take effect until the device reconnects.
+  </Step>
+  <Step title="Navigate to the Configuration Tab">
+    Click the **Configuration** tab near the top of the device detail page. The tab displays the device's current active configuration, organized into sections (Sensor Channels, Communication, Data Quality, and so on).
+  </Step>
+  <Step title="Edit the Desired Settings">
+    Click **Edit** next to the section you want to modify. The section fields become editable. Make your changes — for example, update a sensor scaling factor, change the transmission interval, or toggle maintenance mode. Required fields are marked with a red asterisk and validated in real time as you type.
+
+    ```text
+    # Example: Updating scaling factor for Channel 3 (NRG #40C anemometer)
+    Sensor Type:       Anemometer
+    Height (m):        60.0
+    Scaling Factor:    0.7650   ← Updated from 0.7612
+    Offset (m/s):      0.350
+    ```
+  </Step>
+  <Step title="Review the Change Summary">
+    After editing, click **Review Changes**. NRG Cloud displays a diff view showing the current (active) value alongside the new (pending) value for every field you modified. Review this summary carefully before proceeding — this is your last opportunity to catch unintended edits.
+  </Step>
+  <Step title="Send the Configuration">
+    Click **Send to Device**. NRG Cloud saves the new configuration as a **Pending** update and queues it for delivery at the device's next check-in. The Configuration tab displays a yellow **Pending Update** banner with the timestamp of when the update was queued.
+  </Step>
+  <Step title="Confirm Delivery">
+    After the device checks in and applies the update, the **Pending Update** banner disappears and the Configuration tab reflects the new active values. The delivery event is recorded in the **Configuration History** log with a timestamp and the identity of the user who initiated the change.
+  </Step>
+</Steps>
+
+<Note>
+  Configuration updates are delivered atomically — the device applies the complete new configuration in a single operation, not field by field. If the device cannot validate a configuration package (for example, due to an out-of-range value that passed client-side validation), it rejects the entire update and reports the failure in the **Event Log**. The previous configuration remains active.
+</Note>
+
+## Configuration History and Audit Log
+
+Every configuration change pushed through NRG Cloud is recorded in the **Configuration History** log, accessible from the **Configuration** tab by clicking **View History**. The log captures:
+
+- **Timestamp** — When the change was queued (UTC)
+- **Applied At** — When the device confirmed receipt and application
+- **Changed By** — The NRG Cloud user account that initiated the change
+- **Change Summary** — A human-readable description of what was modified
+- **Status** — Delivered, Pending, or Failed
+
+The audit log is immutable and retained for the lifetime of the device record. You can export the full history as a CSV file for project documentation or compliance records by clicking **Export Log** in the History panel.
+
+<Tip>
+  If multiple team members manage devices in the same NRG Cloud account, the audit log's **Changed By** field lets you trace any configuration change back to the individual who made it — useful for campaign quality assurance reviews and troubleshooting unexpected data shifts.
+</Tip>
+
+## Scheduling Configuration Changes
+
+Instead of applying a change immediately at the next check-in, you can schedule it for a specific future date and time. This is useful for:
+
+- Applying changes at the start of a new measurement period to maintain clean dataset boundaries
+- Coordinating configuration updates with planned on-site visits
+- Switching from 10-minute to 1-minute averaging only during a specific short-term campaign window
+
+To schedule a change, follow the configuration push steps above. At Step 5 (**Send to Device**), click the dropdown arrow on the **Send to Device** button and select **Schedule for Later**. Enter the desired **Apply After** date and time (UTC), then click **Confirm Schedule**. The update queues with a **Scheduled** status and will not be delivered to the device until after the specified time.
+
+You can cancel a scheduled update at any time before it is delivered by clicking **Cancel Scheduled Update** on the Configuration tab.
+
+## Limitations: Settings That Require a Site Visit
+
+Remote configuration covers the majority of operational adjustments, but certain changes require physical access to the device:
+
+| Setting | Why On-Site Access Is Required |
+|---|---|
+| Wiring a new sensor to a channel | Physical electrical connection at the terminal block |
+| Replacing a SIM card or antenna | Hardware swap inside the sealed enclosure |
+| Factory reset | Requires holding the physical reset button |
+| Calibration verification | Requires reference instrument comparison at the sensor |
+| Enclosure inspection | Visual check for moisture ingress, corrosion, or pest damage |
+
+<Warning>
+  Configuring a channel for a sensor that is not physically wired to that channel results in the logger recording noise or a static value. Always confirm the physical wiring at the site before activating or modifying a sensor channel, even if the configuration change was initiated remotely.
+</Warning>
+
+## Best Practices
+
+Following these practices reduces the risk of data gaps and misconfiguration in your live campaigns.
+
+### Test Changes in a Lab First
+
+Before pushing any configuration change to a device in an active campaign, replicate the change on a bench-test LOGR unit in your office or laboratory. Verify that the updated scaling factor or channel assignment produces the expected engineering values under known test conditions. This is especially important for first-time configurations of custom analog sensors.
+
+### Stage Changes Before Campaign Data Periods
+
+Avoid pushing configuration changes during periods you plan to include in your primary wind resource analysis. If possible, coordinate changes with the boundary between averaging periods (for example, on the hour) to minimize the number of partial averaging intervals in the dataset.
+
+### Use Maintenance Mode During Sensor Swaps
+
+Before a technician swaps a sensor at the site, enable **Maintenance Mode** from the Configuration tab. This prevents alert notifications from firing during the swap and tags the data collected during the maintenance window so you can exclude it from analysis if needed. Disable maintenance mode as soon as the technician confirms the new sensor is wired and operational.
+
+### Review Diagnostics After Every Push
+
+After a configuration change is confirmed as delivered, open the device's **Diagnostics** tab and verify that all affected channels are returning values within their expected range. A configuration error that passes validation (for example, a transposed scaling factor) may not generate an error but will produce out-of-range data that is visible in the channel status view.
+
+<Tip>
+  Set up an **Alert Rule** on channel value range for any channel you reconfigure remotely. Navigate to **Alerts → Add Rule**, select the device and channel, and define minimum and maximum plausible values. NRG Cloud will notify you immediately if the channel reports values outside that range after the configuration update takes effect.
+</Tip>

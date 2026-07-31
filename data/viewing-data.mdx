@@ -1,0 +1,145 @@
+---
+title: "Viewing Wind and Solar Measurement Data in NRG Cloud"
+sidebarTitle: "Viewing Data"
+description: "Explore time-series charts, wind roses, and statistical summaries for your NRG Cloud measurement sites, with filtering by channel and data quality flags."
+---
+
+NRG Cloud gives you immediate, browser-based access to all the measurements your deployed hardware is transmitting — no additional software required. Whether you need a quick look at current wind conditions at a site or a multi-month retrospective for a resource assessment report, the data view provides interactive charts, flexible date range controls, and per-channel filtering to help you find and interpret your data quickly. This page explains how to navigate to the data view, what measurement channels are available, and how to understand the quality information displayed alongside each record.
+
+---
+
+## Navigating to the Data View
+
+To open the data view for a site:
+
+1. Click **Sites** in the left navigation panel.
+2. Locate the site you want to inspect and click its name to open the site detail page.
+3. Click the **Data** tab at the top of the site detail page.
+
+The data view opens showing the most recent 24 hours of data by default. All charts and tables on this page respond to the date range and channel filters you apply.
+
+---
+
+## Selecting a Date Range
+
+Use the **Date Range** selector in the toolbar at the top of the data view to control the time window displayed.
+
+- Click the **start date** field, choose a date from the calendar picker, and optionally type a specific time in HH:MM format.
+- Click the **end date** field and repeat for the end of the period.
+- Click **Apply** to reload all charts and tables for the selected range.
+
+Quick-select buttons — **Last 24 Hours**, **Last 7 Days**, **Last 30 Days**, and **Custom** — are available to the right of the date fields for common use cases.
+
+<Tip>
+  All timestamps in the date picker use the local time zone configured for the site. If you need to query a specific UTC window, click the clock icon next to the date fields to toggle the picker to UTC mode.
+</Tip>
+
+---
+
+## Available Measurement Channels
+
+The channels displayed in the data view depend on the sensors connected to your logger or the measurement heights configured on your lidar. NRG Cloud organizes channels into the following categories:
+
+<CardGroup cols={2}>
+  <Card title="Wind Speed" icon="wind">
+    Measured by cup anemometers (met mast) or derived from Doppler profiles (ZX 300e). Available at each configured height, reported as average, maximum, minimum, and standard deviation over the recording interval.
+  </Card>
+  <Card title="Wind Direction" icon="compass">
+    Measured by wind vanes. Reported as the vector-averaged direction and standard deviation for each recording interval. Available at one or more heights on a met mast.
+  </Card>
+  <Card title="Temperature" icon="temperature-half">
+    Measured by shielded temperature probes. Typically installed at one or two heights on a met mast. Reported in degrees Celsius.
+  </Card>
+  <Card title="Pressure" icon="gauge">
+    Barometric pressure from an absolute pressure sensor, typically installed at the base of the tower. Reported in hectopascals (hPa).
+  </Card>
+  <Card title="Relative Humidity" icon="droplet">
+    Measured by a combined temperature and humidity sensor. Reported as a percentage (0–100 %).
+  </Card>
+  <Card title="Solar Irradiance" icon="sun">
+    Global horizontal irradiance (GHI), direct normal irradiance (DNI), or diffuse horizontal irradiance (DHI) from pyranometers or pyrheliometers. Reported in watts per square meter (W/m²).
+  </Card>
+</CardGroup>
+
+---
+
+## Chart Types
+
+NRG Cloud offers three visualization modes. Use the **Chart Type** toggle in the data view toolbar to switch between them.
+
+### Time-Series Line Chart
+
+The default view. Each selected channel is plotted as a continuous line over the chosen date range, with time on the x-axis and the measurement value on the y-axis. You can:
+
+- Hover over any point to see the exact timestamp and value in a tooltip.
+- Click and drag on the chart to zoom into a sub-range.
+- Click the legend entries to show or hide individual channels.
+- Use the **Y-axis** dropdown to overlay multiple channels on a shared axis or use independent axes.
+
+### Wind Rose
+
+Available when at least one wind speed channel and one wind direction channel are selected. The wind rose displays the frequency distribution of wind direction sectors and colors each sector by wind speed class. Hover over a sector wedge to see the percentage of records in that direction bin and speed class.
+
+<Note>
+  The wind rose aggregates all records within the selected date range. For accurate roses, select a date range of at least one full month to capture diurnal and seasonal variability.
+</Note>
+
+### Statistical Summary
+
+A tabular view showing, for each selected channel, the following statistics computed over the selected date range:
+
+- Mean, median, minimum, and maximum values
+- Standard deviation
+- Count of valid records and percentage data recovery
+- Count of missing and out-of-range records
+
+---
+
+## Filtering by Sensor or Channel
+
+When a site has many channels, use the **Channel Filter** panel on the left side of the data view to select which channels appear in charts and tables.
+
+- Expand a category (Wind Speed, Wind Direction, Temperature, etc.) to see individual channels.
+- Check or uncheck channels to add or remove them from the current view.
+- Use the **Select All** and **Clear All** links at the top of the panel for bulk selection.
+- Type in the **Search channels** box to filter the list by channel name.
+
+Your channel selection persists for the current browser session. Refreshing the page resets the selection to the site default.
+
+---
+
+## Understanding Data Quality Flags
+
+Every data record in NRG Cloud carries a quality flag assigned by the logger or by NRG Cloud's automated validation checks. Quality flags are displayed as colored indicators on time-series charts and as columns in the statistical summary table.
+
+<ResponseField name="Valid" type="flag">
+  **Green.** The record passed all range and consistency checks. Use these records with confidence in your analysis.
+</ResponseField>
+
+<ResponseField name="Missing" type="flag">
+  **Gray.** No value was recorded for this channel during this interval. Common causes include sensor disconnection, a logger reboot, or a communication gap. Missing records appear as breaks in the time-series line.
+</ResponseField>
+
+<ResponseField name="Out of Range" type="flag">
+  **Red.** The recorded value falls outside the physically plausible range configured for the channel (for example, a wind speed below 0 m/s or above 75 m/s). These records are excluded from statistical calculations by default.
+</ResponseField>
+
+<ResponseField name="Questionable" type="flag">
+  **Yellow.** The value is within physical range but has triggered a secondary check, such as a rate-of-change test or a relational comparison with a co-located sensor. Review these records before including them in your analysis.
+</ResponseField>
+
+<Tip>
+  Use the **Quality Filter** toggle in the toolbar to show only **Valid** records in charts and statistics. This is recommended when preparing data exports for third-party analysis tools.
+</Tip>
+
+---
+
+## Real-Time vs. Historical Data
+
+NRG Cloud displays both real-time (recently transmitted) and historical (archived) data in the same interface. There is no separate mode to switch between them — simply adjust the date range.
+
+<Note>
+  Data typically arrives in NRG Cloud within minutes of being transmitted by the logger. The exact latency depends on the logger's reporting interval, cellular network conditions at the site, and server processing time. For LOGR loggers configured to report every 10 minutes, you can expect the most recent record to be no more than 10–15 minutes old under normal conditions.
+</Note>
+
+The **Last Data Received** timestamp in the site header shows the age of the most recent record. If this value is more than two reporting intervals old, the device may be offline or experiencing connectivity issues — check the **Devices** tab for signal strength and status details.
