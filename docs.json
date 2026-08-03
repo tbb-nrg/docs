@@ -32,7 +32,11 @@
           },
           {
             "group": "Tell Me More About...",
-            "pages": []
+            "pages": [
+              "getting-started - Auto/dashboard-overview",
+              "data - Auto/data-formats",
+              "api - Auto/nrgpy-python-library"
+            ]
           },
           {
             "group": "Support",
