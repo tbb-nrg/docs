@@ -17,9 +17,8 @@
             "group": "Get Started",
             "pages": [
               "introduction",
-              "getting-started/account-setup",
-              "getting-started/logging-in",
-              "getting-started/dashboard-overview"
+              "getting-started - Auto/account-setup",
+              "getting-started - Auto/logging-in"
             ]
           },
           {
@@ -33,16 +32,16 @@
           {
             "group": "Tell Me More About...",
             "pages": [
-              "getting-started - Auto/dashboard-overview",
               "data - Auto/data-formats",
-              "api - Auto/nrgpy-python-library"
+              "api - Auto/nrgpy-python-library",
+              "data - Auto/sites-and-devices"
             ]
           },
           {
             "group": "Support",
             "pages": [
-              "support/troubleshooting",
-              "support/faq"
+              "support - Auto/troubleshooting",
+              "support - Auto/faq"
             ]
           }
         ]
