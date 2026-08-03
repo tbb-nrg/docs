@@ -1,6 +1,6 @@
 ---
 title: "Troubleshoot NRG Cloud Device and Data Issues"
-sidebarTitle: "Troubleshooting"
+sidebarTitle: "Troubleshooting - Auto"
 description: "Resolve common NRG Cloud problems including offline devices, data gaps, login failures, download errors, and API authentication issues."
 ---
 
@@ -45,7 +45,7 @@ When something isn't working as expected in NRG Cloud, most issues fall into a h
 
   <Steps>
     <Step title="Check whether the device was offline during that period">
-      Open the device's **Event Log** in NRG Cloud and look for offline events, communication failures, or power interruptions that overlap with the gap. If the device was offline, the root cause is connectivity — see the *Device shows 'Offline'* section above.
+      Open the device's **Event Log** in NRG Cloud and look for offline events, communication failures, or power interruptions that overlap with the gap. If the device was offline, the root cause is connectivity — see the _Device shows 'Offline'_ section above.
     </Step>
     <Step title="Review the communication schedule">
       Navigate to **Device Settings** and confirm the upload frequency. A device configured to transmit once per hour, for example, will show apparent gaps if you expect 10-minute data delivery. Adjust the schedule if needed and note that the change applies to future transmissions only.
@@ -159,7 +159,7 @@ When something isn't working as expected in NRG Cloud, most issues fall into a h
       ```python
       import time
       import requests
-
+      
       def get_with_backoff(url, headers, max_retries=5):
           for attempt in range(max_retries):
               response = requests.get(url, headers=headers)

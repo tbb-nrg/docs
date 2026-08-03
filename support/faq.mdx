@@ -1,6 +1,6 @@
 ---
 title: "NRG Cloud Frequently Asked Questions"
-sidebarTitle: "FAQ"
+sidebarTitle: "FAQ - Auto"
 description: "Answers to the most common questions about NRG Cloud hardware compatibility, data retention, user access, the REST API, file formats, and account security."
 ---
 
@@ -15,12 +15,15 @@ Whether you're evaluating NRG Cloud for the first time or looking for a quick an
     <Card title="LOGR Met Data Logger" icon="server" href="/equipment/logr-logger">
       Automatic cellular or satellite transmission with configurable communication schedules.
     </Card>
+
     <Card title="ZX 300e Wind Lidar" icon="wind" href="/equipment/zx300e-lidar">
       Direct integration for remote wind profiling data delivery.
     </Card>
+
     <Card title="Legacy Symphonie Loggers" icon="database" href="/equipment/supported-hardware">
       Supported via manual file upload or the **nrgpy** Python library.
     </Card>
+
     <Card title="All Supported Hardware" icon="list" href="/equipment/supported-hardware">
       View the full list of supported models, firmware versions, and connection methods.
     </Card>
@@ -42,7 +45,7 @@ Whether you're evaluating NRG Cloud for the first time or looking for a quick an
   NRG Cloud retains your raw measurement data for the **lifetime of your account**. There are no rolling deletion windows or storage caps applied to historical records.
 
   <Tip>
-    Even though your data is retained indefinitely, NRG Systems recommends periodically exporting and archiving your data to your own storage systems. You can download data in CSV, binary `.rld`, or JSON formats at any time — see *What formats can I download data in?* below for details.
+    Even though your data is retained indefinitely, NRG Systems recommends periodically exporting and archiving your data to your own storage systems. You can download data in CSV, binary `.rld`, or JSON formats at any time — see _What formats can I download data in?_ below for details.
   </Tip>
 </Accordion>
 
@@ -74,6 +77,7 @@ Whether you're evaluating NRG Cloud for the first time or looking for a quick an
     <Card title="NRG Cloud REST API" icon="code" href="/api/overview">
       A full-featured REST API that supports authentication, device queries, and data retrieval in JSON format. API tokens are valid for one hour and must be included as `Authorization: Bearer <token>` in each request.
     </Card>
+
     <Card title="nrgpy Python Library" icon="python" href="/api/nrgpy-python-library">
       An open-source Python library for reading NRG data files locally and fetching data from NRG Cloud. Ideal for scripted workflows, data pipelines, and integration with analysis tools like pandas.
     </Card>
@@ -88,7 +92,7 @@ Whether you're evaluating NRG Cloud for the first time or looking for a quick an
   NRG Cloud supports several export formats to accommodate different workflows:
 
   | Format | Description | Best for |
-  |---|---|---|
+  | --- | --- | --- |
   | **CSV** | Comma-separated text file with timestamped rows | Spreadsheet analysis, importing into third-party tools |
   | **Binary `.rld`** | Original raw logger binary file | Long-term archiving, NRG software processing |
   | **JSON** (API) | Structured JSON via the REST API | Programmatic access, web application integration |
@@ -134,7 +138,7 @@ Whether you're evaluating NRG Cloud for the first time or looking for a quick an
   NRG Cloud supports the **latest stable versions** of the following browsers:
 
   | Browser | Platform |
-  |---|---|
+  | --- | --- |
   | Google Chrome | Windows, macOS, Linux |
   | Mozilla Firefox | Windows, macOS, Linux |
   | Apple Safari | macOS, iOS |
@@ -152,10 +156,11 @@ Whether you're evaluating NRG Cloud for the first time or looking for a quick an
 
   <CardGroup cols={2}>
     <Card title="Support Portal" icon="globe" href="https://www.nrgsystems.com/support">
-      Visit **www.nrgsystems.com/support** to browse the knowledge base, submit a support ticket, or access product documentation.
+      Visit [**www.nrgsystems.com/support**](http://www.nrgsystems.com/support) to browse the knowledge base, submit a support ticket, or access product documentation.
     </Card>
+
     <Card title="Email Support" icon="envelope" href="mailto:support@nrgsystems.com">
-      Send a detailed message to **support@nrgsystems.com**, including your device serial number, site name, and a description of the issue for the fastest response.
+      Send a detailed message to [**support@nrgsystems.com**](mailto:support@nrgsystems.com), including your device serial number, site name, and a description of the issue for the fastest response.
     </Card>
   </CardGroup>
 </Accordion>
