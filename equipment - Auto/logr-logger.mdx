@@ -1,7 +1,7 @@
 ---
-title: 'LOGR Met Data Logger: Setup and Configuration Guide'
-sidebarTitle: 'LOGR Logger'
-description: 'Register your LOGR Met Data Logger with NRG Cloud, configure sensors and communication settings, push firmware updates, and view live diagnostics remotely.'
+title: "LOGR Met Data Logger: Setup and Configuration Guide"
+sidebarTitle: "LOGR Logger - Auto"
+description: "Register your LOGR Met Data Logger with NRG Cloud, configure sensors and communication settings, push firmware updates, and view live diagnostics remotely."
 ---
 
 The LOGR Met Data Logger is NRG Systems' next-generation instrument for wind and solar resource measurement campaigns. Engineered for the demands of long-term unattended deployment, LOGR combines high-frequency sensor sampling with encrypted data transmission and full remote configurability through NRG Cloud. Whether you are outfitting a tall met mast with a full suite of anemometers and wind vanes or building a compact solar irradiance station, LOGR handles the acquisition side while NRG Cloud handles everything else — data storage, remote management, diagnostics, and reporting — without requiring a site visit.
@@ -12,12 +12,15 @@ The LOGR Met Data Logger is NRG Systems' next-generation instrument for wind and
   <Card title="High-Frequency Sampling" icon="chart-line">
     LOGR samples connected sensors at up to 1 Hz and computes configurable statistics (mean, standard deviation, minimum, maximum, gust) over user-defined averaging intervals, typically 10 minutes.
   </Card>
+
   <Card title="Encrypted Transmission" icon="shield-check">
     All data leaving LOGR is encrypted in transit using TLS 1.2 or higher, ensuring that your campaign measurements are protected from interception over cellular or satellite links.
   </Card>
+
   <Card title="Remote Configuration" icon="sliders">
     Modify sensor channel assignments, scaling factors, offsets, and communication schedules directly from NRG Cloud without sending a technician to the site.
   </Card>
+
   <Card title="Cellular & Satellite" icon="satellite">
     LOGR operates over LTE/3G cellular networks or the Iridium satellite constellation, giving you connectivity options for virtually any deployment location.
   </Card>
@@ -67,7 +70,7 @@ After registration, configure LOGR's input channels to match the sensors physica
 4. Choose the **Sensor Type** from the dropdown. Supported types include:
 
 | Sensor Type | Examples |
-|---|---|
+| --- | --- |
 | Anemometer | NRG #40C, NRG IceFree III |
 | Wind Vane | NRG #200P, NRG 200M |
 | Temperature | NRG T60 |
@@ -108,7 +111,7 @@ LOGR's communication mode determines how and how often it delivers data to NRG C
 ### Cellular Mode
 
 | Setting | Description | Recommended Value |
-|---|---|---|
+| --- | --- | --- |
 | Transmission Interval | How often LOGR pushes data | 10–60 minutes |
 | Retry Attempts | Number of retries on failed send | 3 |
 | APN | SIM card Access Point Name | Supplied by SIM provider |
@@ -120,7 +123,7 @@ LOGR's communication mode determines how and how often it delivers data to NRG C
 ### Satellite Mode
 
 | Setting | Description | Recommended Value |
-|---|---|---|
+| --- | --- | --- |
 | Transmission Schedule | Time-of-day windows for Iridium SBD | 2–4 windows per day |
 | Message Size Limit | Max bytes per SBD message | 340 bytes (Iridium maximum) |
 | Data Compression | Enable lossless compression | Enabled |

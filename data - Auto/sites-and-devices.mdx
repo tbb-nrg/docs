@@ -1,9 +1,3 @@
----
-title: "Managing Measurement Sites and Devices in NRG Cloud"
-sidebarTitle: "Sites & Devices"
-description: "Learn how to create measurement sites, register LOGR and ZX 300e devices, and monitor device status and connectivity in NRG Cloud."
----
-
 Sites and devices are the foundation of how NRG Cloud organizes your measurement campaigns. A **site** represents a physical measurement location — a place on the map where you are conducting wind or solar resource assessment — and acts as the container for all data, configurations, and equipment associated with that campaign. Each site can have one or more **devices** attached to it, whether that is a LOGR data logger, a ZX 300e Wind Lidar, or a legacy Symphonie logger. Understanding how sites and devices relate to each other helps you navigate your data efficiently and keep your deployments well organized.
 
 ---
@@ -16,12 +10,15 @@ A site in NRG Cloud maps to a real-world measurement location or campaign. It st
   <Card title="Measurement Location" icon="location-dot">
     A site anchors your campaign to a specific latitude and longitude, enabling map-based navigation and correct local time display.
   </Card>
+
   <Card title="Data Container" icon="database">
     All time-series measurements, file downloads, and configuration history are scoped to the site, keeping projects cleanly separated.
   </Card>
+
   <Card title="Multi-Device Support" icon="server">
     A single site can host multiple devices — for example, a LOGR logger and a ZX 300e Lidar deployed at the same location.
   </Card>
+
   <Card title="Project Metadata" icon="folder-open">
     Attach project name, client, notes, and custom tags to a site for easy filtering and reporting.
   </Card>
@@ -33,7 +30,7 @@ A site in NRG Cloud maps to a real-world measurement location or campaign. It st
 
 <Steps>
   <Step title="Open the Sites list">
-    In the left navigation panel, click **Sites**. The Sites dashboard displays all existing sites in your organization. Click the **+ New Site** button in the upper-right corner to open the site creation form.
+    In the left navigation panel, click **Sites**. The Sites dashboard displays all existing sites in your organization. Click the **\+ New Site** button in the upper-right corner to open the site creation form.
   </Step>
   <Step title="Enter site name and project details">
     Provide a unique **Site Name** that identifies the location within your organization (for example, `Ridgeline North – Phase 2`). Optionally enter a **Project Name**, **Client**, and free-text **Notes**. These fields are searchable and help you filter sites across large portfolios.
@@ -80,9 +77,11 @@ NRG Cloud currently supports the following device types:
   <Card title="LOGR Data Logger" icon="microchip">
     NRG's cellular-connected data logger for met masts. Supports up to 32 channels, configurable scan rates, and remote firmware updates.
   </Card>
+
   <Card title="ZX 300e Wind Lidar" icon="wind">
     Remote sensing lidar for vertical wind profiling. Transmits processed wind speed and direction profiles at multiple heights.
   </Card>
+
   <Card title="Symphonie Logger (Legacy)" icon="clock-rotate-left">
     NRG's previous-generation data logger. Supported in NRG Cloud for historical data access and file downloads in RWD format.
   </Card>
@@ -99,7 +98,7 @@ Devices are associated with sites by registering their serial number in NRG Clou
     Navigate to the site where you want to register the device and click the **Devices** tab.
   </Step>
   <Step title="Add a device">
-    Click **+ Add Device**. Select the device type — **LOGR**, **ZX 300e**, or **Symphonie** — from the dropdown.
+    Click **\+ Add Device**. Select the device type — **LOGR**, **ZX 300e**, or **Symphonie** — from the dropdown.
   </Step>
   <Step title="Enter the serial number">
     Type the device's serial number exactly as it appears on the label (for example, `LOGR-00412`). NRG Cloud validates the serial number against its device registry.

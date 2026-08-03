@@ -1,7 +1,7 @@
 ---
-title: 'NRG Cloud API Authentication — OAuth 2.0 Token Guide'
-sidebarTitle: 'Authentication'
-description: 'Learn how to generate API credentials, request OAuth 2.0 Bearer tokens, and authenticate all your NRG Cloud API requests with best practices.'
+title: "NRG Cloud API Authentication — OAuth 2.0 Token Guide"
+sidebarTitle: "Authentication - Auto"
+description: "Learn how to generate API credentials, request OAuth 2.0 Bearer tokens, and authenticate all your NRG Cloud API requests with best practices."
 ---
 
 The NRG Cloud API uses the **OAuth 2.0 client credentials** grant flow to authenticate machine-to-machine requests. You exchange a `client_id` and `client_secret` for a short-lived Bearer token, then include that token in the `Authorization` header of every API call. This page walks you through generating credentials, requesting a token, using it in requests, and following security best practices to keep your credentials safe.
@@ -35,7 +35,7 @@ Use your credentials to request a Bearer token from the token endpoint.
 
 **Token endpoint:**
 
-```
+```text
 POST https://cloud.nrgsystems.com/api/v1/oauth/token
 Content-Type: application/x-www-form-urlencoded
 ```
@@ -216,7 +216,7 @@ Protecting your `client_id` and `client_secret` is critical. Follow these guidel
 
     ```python
     import os
-
+    
     client_id = os.environ["NRG_CLIENT_ID"]
     client_secret = os.environ["NRG_CLIENT_SECRET"]
     ```

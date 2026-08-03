@@ -1,9 +1,3 @@
----
-title: "Download and Export Measurement Data from NRG Cloud"
-sidebarTitle: "Downloading Data"
-description: "Export wind and solar measurement data as CSV or RLD files, schedule automated exports, and understand file naming conventions and CSV column structure."
----
-
 NRG Cloud lets you export your measurement data in multiple formats so you can use it in your preferred analysis tools, archive it for long-term storage, or share it with clients and colleagues. You can download data for a single site and date range on demand, queue bulk downloads across multiple sites, or schedule recurring exports that run automatically and notify you when new files are ready. This page walks you through each of these workflows and explains what to expect in the files you receive.
 
 ---
@@ -47,7 +41,7 @@ NRG Cloud lets you export your measurement data in multiple formats so you can u
 If you need to download data for multiple sites at once, or for a single site over a period longer than 366 days, use the **Bulk Download** feature.
 
 1. In the left navigation panel, click **Downloads** to open the Bulk Download page.
-2. Click **+ New Bulk Download**.
+2. Click **\+ New Bulk Download**.
 3. Select one or more sites using the site checkboxes or the **Select All** button.
 4. Enter the date range and choose the export format.
 5. Click **Queue Download**. NRG Cloud begins processing the download in the background.
@@ -69,10 +63,11 @@ NRG Cloud can automatically generate and deliver data files on a recurring sched
     In the left navigation panel, click **Settings**, then click **Scheduled Exports**.
   </Step>
   <Step title="Create a new schedule">
-    Click **+ New Schedule**. Select the site or sites to include, the export format, and the delivery frequency — **Daily**, **Weekly**, or **Monthly**.
+    Click **\+ New Schedule**. Select the site or sites to include, the export format, and the delivery frequency — **Daily**, **Weekly**, or **Monthly**.
   </Step>
   <Step title="Configure delivery">
     Choose a delivery method:
+
     - **Email** — NRG Cloud sends an email with the file attached or a download link when the file size exceeds the attachment limit.
     - **SFTP** — NRG Cloud pushes files directly to an SFTP server you specify. Enter the host, port, path, username, and password or SSH key.
   </Step>
@@ -90,18 +85,19 @@ NRG Cloud can automatically generate and deliver data files on a recurring sched
 
 NRG Cloud uses the following naming pattern for all downloaded files:
 
-```
+```text
 {SiteName}_{SerialNumber}_{StartDate}_{EndDate}.{extension}
 ```
 
 For example:
 
-```
+```text
 RidgelineNorth_LOGR-00412_20240101_20240131.csv
 RidgelineNorth_LOGR-00412_20240101_20240131.rld
 ```
 
 Where:
+
 - `{SiteName}` is the site name with spaces replaced by underscores and special characters removed.
 - `{SerialNumber}` is the device serial number.
 - `{StartDate}` and `{EndDate}` are formatted as `YYYYMMDD`.

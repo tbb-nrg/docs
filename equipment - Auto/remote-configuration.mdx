@@ -1,7 +1,7 @@
 ---
-title: 'How to Remotely Configure NRG Devices in NRG Cloud'
-sidebarTitle: 'Remote Configuration'
-description: 'Change sensor settings, communication schedules, and alert thresholds on deployed NRG devices from NRG Cloud without dispatching a technician to the field.'
+title: "How to Remotely Configure NRG Devices in NRG Cloud"
+sidebarTitle: "Remote Configuration - Auto"
+description: "Change sensor settings, communication schedules, and alert thresholds on deployed NRG devices from NRG Cloud without dispatching a technician to the field."
 ---
 
 Remote configuration is one of the most operationally valuable capabilities in NRG Cloud. Instead of scheduling a site visit every time you need to adjust a sensor channel, update a transmission interval, or activate maintenance mode, you make the change from your browser and NRG Cloud delivers it to the device at its next check-in. This eliminates travel costs, reduces campaign downtime, and lets you respond quickly to data quality issues discovered in post-processing — regardless of whether your site is a rooftop in New England or a remote ridgeline with no road access for half the year.
@@ -14,12 +14,15 @@ NRG Cloud supports remote modification of the following configuration categories
   <Card title="Sensor Channel Settings" icon="plug">
     Update sensor type assignments, measurement heights, scaling factors, and offset values for any channel on a LOGR logger. Changes take effect at the next data transmission after the device receives the updated configuration.
   </Card>
+
   <Card title="Sampling & Averaging Rates" icon="stopwatch">
     Adjust the raw sampling frequency and the statistics averaging interval (for example, switch from 10-minute to 1-minute averages during a short-term intensive observation period).
   </Card>
+
   <Card title="Communication Schedule" icon="calendar">
     Change how frequently a device transmits data to NRG Cloud, set satellite transmission windows, or temporarily suspend transmissions during a maintenance window.
   </Card>
+
   <Card title="Maintenance Mode" icon="wrench">
     Place a device in maintenance mode to suppress alerts and exclude data collected during calibration checks or sensor swaps from the primary campaign dataset.
   </Card>
@@ -99,7 +102,7 @@ You can cancel a scheduled update at any time before it is delivered by clicking
 Remote configuration covers the majority of operational adjustments, but certain changes require physical access to the device:
 
 | Setting | Why On-Site Access Is Required |
-|---|---|
+| --- | --- |
 | Wiring a new sensor to a channel | Physical electrical connection at the terminal block |
 | Replacing a SIM card or antenna | Hardware swap inside the sealed enclosure |
 | Factory reset | Requires holding the physical reset button |

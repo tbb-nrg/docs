@@ -1,7 +1,7 @@
 ---
-title: 'NRG Cloud REST API — Developer Overview & Quick Start'
-sidebarTitle: 'Overview'
-description: 'Explore the NRG Cloud REST API to programmatically access wind and solar measurement data, manage sites, and download data files easily.'
+title: "NRG Cloud REST API — Developer Overview & Quick Start"
+sidebarTitle: "Overview - Auto"
+description: "Explore the NRG Cloud REST API to programmatically access wind and solar measurement data, manage sites, and download data files easily."
 ---
 
 The NRG Cloud REST API gives you programmatic access to everything stored in your NRG Cloud account — from site configurations and measurement time series to raw and converted data files. Whether you are building automated data pipelines, integrating NRG Cloud into your own applications, or running batch downloads, the API provides a consistent, secure interface that works with any language or tool capable of making HTTP requests.
@@ -10,7 +10,7 @@ The NRG Cloud REST API gives you programmatic access to everything stored in you
 
 All API requests are made to the following base URL:
 
-```
+```text
 https://cloud.nrgsystems.com/api/v1
 ```
 
@@ -22,12 +22,15 @@ Every endpoint documented in this section is relative to this base URL. For exam
   <Card title="Authentication" icon="lock" href="/api/authentication">
     Obtain OAuth 2.0 Bearer tokens using your client credentials and learn how to secure your API keys.
   </Card>
+
   <Card title="Endpoints Reference" icon="brackets-curly" href="/api/endpoints">
     Browse every available endpoint for sites, time-series data, and file management with full parameter details.
   </Card>
+
   <Card title="nrgpy Python Library" icon="python" href="/api/nrgpy-python-library">
     Use the open-source nrgpy library to authenticate, list files, convert RLD data, and work with pandas DataFrames.
   </Card>
+
   <Card title="NRG Cloud Portal" icon="cloud" href="https://cloud.nrgsystems.com">
     Log in to your NRG Cloud account to manage sites, devices, and generate API credentials.
   </Card>
@@ -59,7 +62,7 @@ All responses are returned as **JSON**. Successful responses carry an HTTP `2xx`
 To ensure fair usage across all customers, the API enforces the following default rate limits:
 
 | Scope | Limit |
-|---|---|
+| --- | --- |
 | Authenticated requests | 100 requests per minute |
 | Token endpoint | 10 requests per minute |
 
@@ -80,7 +83,7 @@ The current API version is **v1**, reflected in the base URL path (`/api/v1`). W
 ## Common HTTP Status Codes
 
 | Status Code | Meaning |
-|---|---|
+| --- | --- |
 | `200 OK` | Request succeeded |
 | `201 Created` | Resource created successfully (e.g., file conversion queued) |
 | `400 Bad Request` | Missing or invalid request parameters |

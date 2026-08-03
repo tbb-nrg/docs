@@ -1,7 +1,7 @@
 ---
-title: 'nrgpy Python Library — NRG Cloud API Client Guide'
-sidebarTitle: 'nrgpy Library'
-description: 'Install and use the open-source nrgpy library to authenticate, list files, convert RLD data, and load wind and solar measurements into pandas DataFrames.'
+title: "nrgpy Python Library — NRG Cloud API Client Guide"
+sidebarTitle: "nrgpy Library - Auto"
+description: "Install and use the open-source nrgpy library to authenticate, list files, convert RLD data, and load wind and solar measurements into pandas DataFrames."
 ---
 
 **nrgpy** is an open-source Python library maintained by NRG Systems that gives you a convenient, high-level interface for working with your NRG Cloud data — no raw HTTP calls required. With nrgpy you can authenticate against the NRG Cloud API, list and filter data files by site or logger serial number, trigger RLD-to-text conversions, download files, and load the results directly into pandas DataFrames for analysis. The library also supports reading Symphonie exported text files from your local filesystem, so it works equally well for offline workflows.
@@ -10,6 +10,7 @@ description: 'Install and use the open-source nrgpy library to authenticate, lis
   <Card title="nrgpy on GitHub" icon="github" href="https://github.com/nrgpy/nrgpy">
     View the source code, open issues, and contribute to the project.
   </Card>
+
   <Card title="NRG Cloud API Reference" icon="brackets-curly" href="/api/endpoints">
     Explore the underlying REST endpoints that nrgpy calls on your behalf.
   </Card>
@@ -138,6 +139,7 @@ reader = nrgpy.cloud_api.convert_file(
 ```
 
 The `convert_file` function:
+
 1. Submits a conversion job to the NRG Cloud API (`POST /files/convert`)
 2. Polls for completion
 3. Downloads the converted text file to `out_dir`
@@ -259,7 +261,7 @@ The `.data` DataFrame contains exactly the same structure as the cloud-based wor
 Once a file is loaded (whether via `convert_file` or `symphonieplus_export`), the reader object exposes the following key attributes:
 
 | Attribute | Type | Description |
-|---|---|---|
+| --- | --- | --- |
 | `reader.data` | `pd.DataFrame` | Time-indexed measurement data with one column per channel |
 | `reader.site_description` | `str` | Site name and description from the file header |
 | `reader.logger_serial_number` | `str` | Serial number of the data logger |

@@ -1,7 +1,7 @@
 ---
-title: 'ZX 300e Wind Lidar Integration and Configuration Guide'
-sidebarTitle: 'ZX 300e Lidar'
-description: 'Connect and configure your ZX 300e Wind Lidar in NRG Cloud, view vertical wind profiles, manage scan heights, and download IEC-classified measurement data.'
+title: "ZX 300e Wind Lidar Integration and Configuration Guide"
+sidebarTitle: "ZX 300e Lidar - Auto"
+description: "Connect and configure your ZX 300e Wind Lidar in NRG Cloud, view vertical wind profiles, manage scan heights, and download IEC-classified measurement data."
 ---
 
 The ZX 300e is a vertical profiling continuous-wave Doppler lidar that measures wind speed, wind direction, and turbulence intensity across multiple heights simultaneously. Unlike a traditional met mast that requires sensors at every measurement level, a single ZX 300e replaces an entire tower instrumentation suite — scanning heights from 21 m to 200 m with configurable resolution and a measurement availability that meets the requirements of IEC 61400-12-1 wind turbine power performance testing. NRG Cloud serves as the remote management and data access layer for the ZX 300e, giving you live wind profile dashboards, configuration control, and seamless data export without requiring on-site access to the instrument.
@@ -13,7 +13,7 @@ The ZX 300e is a vertical profiling continuous-wave Doppler lidar that measures 
 ## Measurement Capabilities
 
 | Parameter | Specification |
-|---|---|
+| --- | --- |
 | Measurement Heights | 21 m to 200 m (configurable) |
 | Number of Scan Heights | Up to 10 simultaneous heights |
 | Wind Speed Range | 1 m/s to 70 m/s |
@@ -59,6 +59,7 @@ Once paired, the ZX 300e's data is available in real time through the NRG Cloud 
 The live profile chart plots wind speed and direction against measurement height for the most recent completed averaging period. Heights are displayed on the vertical axis (m above ground level), and wind speed is displayed on the horizontal axis (m/s). Direction is shown as an arrow overlay at each height.
 
 Use this view to:
+
 - Verify that the lidar is operating correctly after deployment
 - Detect wind shear anomalies or low-level jets in real time
 - Confirm that all configured scan heights are returning valid measurements
@@ -121,11 +122,11 @@ NRG Cloud displays two lidar-specific data quality metrics alongside wind measur
 Availability is the fraction of one-second samples within an averaging period that the lidar successfully resolves into a wind vector. It is expressed as a percentage (0–100 %) for each height independently.
 
 | Availability | Interpretation |
-|---|---|
+| --- | --- |
 | ≥ 95 % | Excellent — full data quality |
 | 75 % – 94 % | Acceptable — minor atmospheric signal reduction |
 | 50 % – 74 % | Reduced — possible precipitation, fog, or clean air at this height |
-| < 50 % | Poor — averaging period flagged; review conditions |
+| \< 50 % | Poor — averaging period flagged; review conditions |
 
 <Info>
   IEC 61400-12-1 requires a minimum availability threshold for data to be included in power performance analyses. Consult the standard and your project protocol for the specific threshold applicable to your campaign.
@@ -145,14 +146,14 @@ NRG Cloud automatically applies the ZX 300e manufacturer-specified CNR filter (`
 
 Export ZX 300e data from NRG Cloud in standard formats for use in wind analysis software.
 
-1. Navigate to **Equipment → [Device Name] → Data Export**.
+1. Navigate to **Equipment → \[Device Name\] → Data Export**.
 2. Select the **Date Range** for the export.
 3. Choose the **Heights** to include — select individual heights or all configured heights.
 4. Select the **Averaging Period** (1-minute or 10-minute, matching what the lidar was configured to record).
 5. Choose an **Export Format**:
 
 | Format | Use Case |
-|---|---|
+| --- | --- |
 | CSV | General-purpose analysis in Excel, Python, R |
 | NRG Cloud Standard (.nrg) | Import into Windographer or other NRG-compatible tools |
 | IEC Data Format | Power performance test reporting per IEC 61400-12-1 |
