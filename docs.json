@@ -23,6 +23,17 @@
             ]
           },
           {
+            "group": "I Want To...",
+            "pages": [
+              "i-want-to/add-an-end-date-to-a-site",
+              "i-want-to/change-the-logger-for-an-existing-cloud-site"
+            ]
+          },
+          {
+            "group": "Tell Me More About...",
+            "pages": []
+          },
+          {
             "group": "Support",
             "pages": [
               "support/troubleshooting",
